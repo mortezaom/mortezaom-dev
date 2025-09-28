@@ -1,9 +1,7 @@
-import { Hero } from "./hero";
+import HomeHero from "@/components/home-hero";
 
 export default function Home() {
 	return (
-		<div className="font-sans">
-			<Hero />
-		</div>
+		<HomeHero />
 	);
 }
