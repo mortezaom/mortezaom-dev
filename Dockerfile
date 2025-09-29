@@ -37,7 +37,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./
 
 USER nextjs
 
-EXPOSE 3000
+EXPOSE 3033
 
 # Start Next.js in server mode
 CMD ["pnpm", "start"]

@@ -6,6 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3033:3033"
     container_name: mortezaom-dev-web
     restart: unless-stopped
