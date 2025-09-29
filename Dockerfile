@@ -1,4 +1,4 @@
-# Multi-stage build for Next.js static export
+# Multi-stage build for Next.js server mode
 FROM node:20-alpine AS base
 
 # Install dependencies only when needed
@@ -16,26 +16,28 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the application for static export
+# Build the application
 RUN corepack enable pnpm && pnpm run build
 
-# Production image - lightweight static file server
+# Production image
 FROM node:20-alpine AS runner
 WORKDIR /app
-
-# Install serve package globally
-RUN npm install -g serve
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy static files from Next.js build
-COPY --from=builder --chown=nextjs:nodejs /app/out ./public
+# Copy built app and dependencies
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.* ./
+COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./
 
 USER nextjs
 
 EXPOSE 3000
 
-# Serve static files
-CMD ["serve", "-s", "public", "-l", "3000"]
+# Start Next.js in server mode
+CMD ["pnpm", "start"]
