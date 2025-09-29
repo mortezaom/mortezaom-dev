@@ -35,6 +35,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.* ./
 COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./
 
+RUN corepack enable pnpm
+
 USER nextjs
 
 ENV PORT=3033
