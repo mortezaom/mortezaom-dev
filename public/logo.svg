@@ -1,0 +1,6 @@
+<svg viewBox="0 0 200 200" width="200" height="200" aria-label="Letter M">
+    <title>Letter M Logo</title>
+    <g transform="matrix(10,0,0,10,30,20)">
+        <path fill="#8c5cff" stroke="#8c5cff" stroke-width="0.5" d="M1 16 L1 0 L7 6 L13 0 L13 16 L11 16 L11 5.2 L7 9.2 L3 5.2 L3 16 Z" />
+    </g>
+</svg>

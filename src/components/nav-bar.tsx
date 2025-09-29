@@ -6,14 +6,15 @@ import { Button } from "./ui/button";
 
 export const NavBar = async ({ className }: { className?: string }) => {
 	return (
-		<nav className={cn("w-full mb-4 flex items-center justify-between py-8", className)}>
-			<Link href="/" className="text-2xl font-semibold flex items-end">
+		<nav className={cn("flex justify-between items-center mb-4 w-full h-20", className)}>
+			<Link href="/" className="flex items-end font-semibold text-2xl">
 				<Logo size={34} className="text-primary" />
-				<h1 className="hide-first-letter -ml-0.5">MortezaOM</h1>
+				<h1 className="-ml-0.5 hide-first-letter">MortezaOM</h1>
 			</Link>
 
 			<Button variant="ghost" size="icon" className="size-10 cursor-pointer">
-				<ChartNoAxesColumn className="rotate-270 size-6" />
+				{/* Implement List Items First */}
+				{/* <ChartNoAxesColumn className="size-6 rotate-270" /> */}
 			</Button>
 		</nav>
 	);
