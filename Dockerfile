@@ -37,6 +37,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./
 
 USER nextjs
 
+ENV PORT=3033
 EXPOSE 3033
 
 # Start Next.js in server mode
