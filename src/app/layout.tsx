@@ -36,7 +36,7 @@ export default async function RootLayout({
 
 	return (
 		<html lang="en" className={className} style={{ colorScheme: className }}>
-			<body className="flex flex-col items-center h-screen overflow-hidden antialiased">
+			<body className="flex flex-col items-center h-screen antialiased">
 				<ThemeProvider
 					attribute="class"
 					defaultTheme={theme?.value || "system"}
