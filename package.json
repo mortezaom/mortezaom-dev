@@ -1,0 +1,33 @@
+{
+  "name": "mortezaom-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 3000",
+    "generate-routes": "tsr generate",
+    "build": "vite build",
+    "start": "node .output/server/index.mjs",
+    "preview": "vite preview",
+    "format": "biome format",
+    "lint": "biome lint",
+    "check": "biome check"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/router-plugin": "^1.168.23",
+    "@tanstack/solid-router": "latest",
+    "@tanstack/solid-start": "latest",
+    "nitro": "latest",
+    "solid-js": "^1.9.14",
+    "solid-motionone": "^1.0.4",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.6",
+    "@tanstack/devtools-vite": "latest",
+    "@tanstack/router-cli": "^1.167.21",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.0",
+    "vite-plugin-solid": "^2.11.14"
+  }
+}
