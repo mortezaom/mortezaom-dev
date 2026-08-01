@@ -3,9 +3,9 @@ export const EMAIL = 'hi@mortezaom.dev';
 export const MAILTO = `mailto:${EMAIL}`;
 
 export const NAV_LINKS = [
+  { label: 'About', href: '#about' },
   { label: 'Work', href: '#work' },
   { label: 'Experience', href: '#experience' },
-  { label: 'About', href: '#about' },
   { label: 'Skills', href: '#skills' },
 ];
 

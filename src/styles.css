@@ -253,8 +253,9 @@ body {
 }
 
 .site-header {
-  backface-visibility: hidden;
-  transform: translateZ(0);
+  position: sticky;
+  z-index: 500;
+  top: 0;
 }
 
 html {
