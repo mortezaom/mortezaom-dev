@@ -1,6 +1,60 @@
-Welcome to your new TanStack Start app! 
+Welcome to your new TanStack Start app!
 
-# Getting Started
+# Content CMS (portfolio data + admin panel)
+
+All page content lives in a Turso embedded DB (`DB_FILE_NAME`, default
+`./data/portfolio.db`) via `drizzle-orm@rc` + `@tursodatabase/database`.
+`content/portfolio.json` is the git-tracked source of truth — seed and backup
+format for both the CLI and the admin panel.
+
+## Setup
+
+```bash
+cp .env.example .env   # then fill ADMIN_* (see below)
+pnpm cms:hash-password --password "<strong-password>"  # -> ADMIN_PASSWORD_HASH
+pnpm db:migrate        # create/migrate data/portfolio.db
+pnpm cms:import        # seed DB from content/portfolio.json
+```
+
+Required env: `DB_FILE_NAME`, `SITE_URL`, `ADMIN_USERNAME`,
+`ADMIN_PASSWORD_HASH` (scrypt `salt:key`, never plaintext),
+`ADMIN_SESSION_SECRET` (32+ random chars).
+
+## CLI
+
+```bash
+pnpm cms:import [--file <path>] [--dry-run]  # validate + replace all content
+pnpm cms:export [--file <path>]              # dump DB -> JSON (byte-stable)
+pnpm db:migrate                              # apply drizzle migrations
+pnpm db:generate                             # new migration from schema changes
+pnpm db:push --force                         # dev-only direct schema push
+```
+
+`cms:import` also regenerates `public/sitemap.xml` + `public/robots.txt`.
+
+## Admin panel
+
+`/admin/login` (env single admin, 12h signed cookie, 5-fail lockout).
+4 pages: **Site & SEO** (+ JSON import/export), **Profile**
+(hero/about/contact/stats), **Work** (spotlight/engineering/archive +
+headers), **Career** (experience + skills). Every save bumps the content
+version, clears the server cache, and revalidates `/` (ISR 3600s).
+
+## Deploy (VPS, Node)
+
+```bash
+pnpm build
+node .output/server/index.mjs   # run from repo root; keep data/ on a volume
+```
+
+Back up `data/portfolio.db` + `content/portfolio.json` (Turso embedded is
+beta — JSON is the restorable truth). `/` is prerendered + ISR cached
+(`Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`);
+`/admin/**` is SSR-only, `no-store` + `noindex`.
+
+---
+
+# Getting Started (TanStack boilerplate)
 
 To run this application:
 
@@ -60,10 +114,10 @@ Now that you have two routes you can use a `Link` component to navigate between 
 
 ### Adding Links
 
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/solid-router`.
+To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
 
 ```tsx
-import { Link } from "@tanstack/solid-router";
+import { Link } from "@tanstack/react-router";
 ```
 
 Then anywhere in your JSX you can use it like so:
@@ -74,20 +128,20 @@ Then anywhere in your JSX you can use it like so:
 
 This will create a link that will navigate to the `/about` route.
 
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/solid/api/router/linkComponent).
+More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
 
 ### Using A Layout
 
 In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes.
 
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/solid/guide/routing-concepts#layouts).
+More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
 
 ## Server Functions
 
 TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
 
 ```tsx
-import { createServerFn } from '@tanstack/solid-start'
+import { createServerFn } from '@tanstack/react-start'
 
 const getServerTime = createServerFn({
   method: 'GET',
@@ -103,7 +157,7 @@ There are multiple ways to fetch data in your application. You can use TanStack 
 For example:
 
 ```tsx
-import { createFileRoute } from '@tanstack/solid-router'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/people')({
   loader: async () => {
@@ -117,15 +171,15 @@ function PeopleComponent() {
   const data = Route.useLoaderData()
   return (
     <ul>
-      <For each={data().results}>
-        {(person) => <li>{person.name}</li>}
-      </For>
+      {data.results.map((person) => (
+        <li key={person.name}>{person.name}</li>
+      ))}
     </ul>
   )
 }
 ```
 
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/solid/guide/data-loading#loader-parameters).
+Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
 
 # Demo files
 

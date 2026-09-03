@@ -4,6 +4,10 @@ dist
 dist-ssr
 *.local
 .env
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
 .nitro
 .tanstack
 .wrangler

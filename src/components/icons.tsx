@@ -7,9 +7,9 @@ export const ArrowR = ({ size = 14 }: SizedIconProps) => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="2.2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     aria-hidden="true"
   >
     <path d="M5 12h14" />
@@ -24,9 +24,9 @@ export const ArrowUR = ({ size = 14 }: SizedIconProps) => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="2.2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     aria-hidden="true"
   >
     <path d="M7 17L17 7" />
@@ -41,9 +41,9 @@ export const CopyIcon = () => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="1.9"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeWidth="1.9"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     aria-hidden="true"
   >
     <rect x="9" y="9" width="12" height="12" rx="2.5" />
@@ -58,9 +58,9 @@ export const CheckIcon = () => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="2.4"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeWidth="2.4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     aria-hidden="true"
   >
     <path d="M4 12.5l5.5 5.5L20 7" />
@@ -122,10 +122,10 @@ export const MailIcon = () => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="1.9"
+    strokeWidth="1.9"
     aria-hidden="true"
   >
     <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
-    <path d="M3 7l9 6 9-6" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M3 7l9 6 9-6" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );

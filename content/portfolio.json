@@ -1,0 +1,181 @@
+{
+  "site": {
+    "siteUrl": "https://mortezaom.dev",
+    "title": "Morteza Omar Mohammadi — Full-Stack Software Engineer",
+    "description": "Full-stack software engineer leading production web and mobile products across backend services, payments, React, Node.js, and Flutter.",
+    "socialDescription": "I build and lead reliable web and mobile products from backend services to production release.",
+    "ogImage": "https://mortezaom.dev/morteza-og.jpg",
+    "author": "Morteza Omar Mohammadi",
+    "twitterCreator": "@mortezaaom",
+    "themeColor": "#0c0d0f"
+  },
+  "profile": {
+    "email": "hi@mortezaom.dev",
+    "cvPath": "/Morteza-Omar-Mohammadi-CV.pdf",
+    "heroName": ["MORTEZA", "OMAR", "MOHAMMADI"],
+    "heroRole": "Full-Stack Software Engineer",
+    "heroTagline": "I design systems, lead development, and ship reliable products.",
+    "heroCardTitle": "Shipping products end to end",
+    "heroCardCopy": "Building production backend, web, and mobile products since 2020.",
+    "aboutParagraphs": [
+      "I'm a full-stack software engineer who takes products from the first data model to production release. I work across backend services, payments, web applications, and Flutter mobile apps, and I lead remote delivery for ticketing and mobility products.",
+      "I care about clear ownership, maintainable code, reliable releases, and software that feels simple to use."
+    ],
+    "portraitAlt": "Portrait of Morteza Omar Mohammadi",
+    "contactHeading": "Let's talk.",
+    "contactCopy": "Have a question or want to discuss an opportunity? Send me a message."
+  },
+  "sections": [
+    { "key": "about", "eyebrow": null, "title": "About me", "copy": null },
+    {
+      "key": "workSpotlight",
+      "eyebrow": "Spotlight",
+      "title": "Work that defines what I do now.",
+      "copy": "Production products where I own major parts of the engineering, from system design and backend services to customer-facing web and mobile experiences."
+    },
+    {
+      "key": "workEngineering",
+      "eyebrow": "Under the Hood",
+      "title": "Focused systems and engineering work.",
+      "copy": "Open-source projects, backend systems, and technical builds that explore a specific problem in more depth."
+    },
+    { "key": "workArchive", "eyebrow": "From the Archive", "title": "Earlier work that shaped my experience.", "copy": null },
+    {
+      "key": "experience",
+      "eyebrow": null,
+      "title": "Experience",
+      "copy": "My work has progressed from web and mobile development to leading complete product builds across backend, web, mobile, and payments."
+    },
+    { "key": "skills", "eyebrow": null, "title": "Tools I use to\nbuild and ship", "copy": null }
+  ],
+  "navLinks": [
+    { "label": "About", "href": "#about" },
+    { "label": "Work", "href": "#work" },
+    { "label": "Experience", "href": "#experience" },
+    { "label": "Skills", "href": "#skills" }
+  ],
+  "quickLinks": [
+    { "label": "GitHub", "href": "https://github.com/mortezaom" },
+    { "label": "LinkedIn", "href": "https://linkedin.com/in/mortezaom" },
+    { "label": "Résumé", "href": "/Morteza-Omar-Mohammadi-CV.pdf" }
+  ],
+  "socials": [
+    { "label": "GitHub", "href": "https://github.com/mortezaom", "icon": "github" },
+    { "label": "LinkedIn", "href": "https://linkedin.com/in/mortezaom", "icon": "linkedin" },
+    { "label": "X", "href": "https://x.com/mortezaaom", "icon": "x" },
+    { "label": "Email", "href": "mailto:hi@mortezaom.dev", "icon": "mail" }
+  ],
+  "footerLinks": [
+    { "label": "Résumé (PDF)", "href": "/Morteza-Omar-Mohammadi-CV.pdf" },
+    { "label": "GitHub", "href": "https://github.com/mortezaom" },
+    { "label": "Email", "href": "mailto:hi@mortezaom.dev" },
+    { "label": "bilit.events", "href": "https://bilit.events" }
+  ],
+  "stats": [
+    { "value": "Since 2020", "label": "Building products" },
+    { "value": "Thousands", "label": "Customers served" },
+    { "value": "Evolve + AI", "label": "Modern tools and workflows" }
+  ],
+  "projects": [
+    {
+      "kind": "spotlight",
+      "category": "Event ticketing",
+      "name": "Bilit.Events",
+      "href": "https://bilit.events",
+      "description": "An event-ticketing platform covering purchases, payments, seat management, ticket delivery, and event check-in.",
+      "ownership": "I lead engineering across event and order services, Stripe payment flows, background jobs, the customer web application, and the Flutter ticket-scanner app.",
+      "role": "Lead Developer · November 2024 — Present",
+      "status": null,
+      "linkLabel": "Visit Bilit.Events",
+      "technologies": ["TypeScript", "Node.js", "React", "Flutter", "MongoDB", "Redis", "Stripe"]
+    },
+    {
+      "kind": "spotlight",
+      "category": "Cycling platform",
+      "name": "Pedal24",
+      "href": "https://pedal24.com",
+      "description": "A cycling platform for bike services, marketplace listings, community events, and useful local spots.",
+      "ownership": "I lead development across the Flutter app, backend services, product and order flows, service workflows, and payment integration.",
+      "role": "Lead Developer · January 2026 — Present",
+      "status": null,
+      "linkLabel": "Visit Pedal24",
+      "technologies": ["Flutter", "TypeScript", "Node.js", "Firebase", "Stripe"]
+    },
+    {
+      "kind": "engineering",
+      "category": "Open source",
+      "name": "Relay Pulse",
+      "href": "https://github.com/mortezaom/relay-pulse",
+      "description": "An uptime-monitoring platform for HTTP, HTTPS, and TCP services, designed for simple deployment on Cloudflare Workers.",
+      "ownership": null,
+      "role": null,
+      "status": "In active development",
+      "linkLabel": "View source",
+      "technologies": ["TypeScript", "Next.js", "Cloudflare Workers", "Drizzle"]
+    },
+    {
+      "kind": "archive",
+      "category": null,
+      "name": "Paper",
+      "href": "https://github.com/mortezaom",
+      "description": null,
+      "ownership": null,
+      "role": null,
+      "status": null,
+      "linkLabel": "Open Paper",
+      "technologies": ["Flutter", "Firebase", "Vue 2"]
+    },
+    {
+      "kind": "archive",
+      "category": null,
+      "name": "Farsian",
+      "href": null,
+      "description": null,
+      "ownership": null,
+      "role": null,
+      "status": null,
+      "linkLabel": null,
+      "technologies": ["Flutter"]
+    }
+  ],
+  "experience": [
+    {
+      "role": "Lead Developer",
+      "company": "Pedal24 UG",
+      "period": "Jan 2026 — Present",
+      "startDate": "2026-01",
+      "description": "Leading development across the Flutter app, backend services, product and order flows, service workflows, and payment systems.",
+      "stack": ["Flutter", "TypeScript", "Node.js", "Firebase", "Stripe"]
+    },
+    {
+      "role": "Lead Developer",
+      "company": "Bilit Platform FZ-LLC",
+      "period": "Nov 2024 — Present",
+      "startDate": "2024-11",
+      "description": "Leading engineering across ticketing services, payments, background processing, the customer web application, and the Flutter scanner app.",
+      "stack": ["Node.js", "MongoDB", "Redis", "BullMQ", "React", "Stripe", "Flutter"]
+    },
+    {
+      "role": "Application Developer",
+      "company": "Webfume LLC",
+      "period": "Mar 2022 — Oct 2024",
+      "startDate": "2022-03",
+      "description": "Built and released web and mobile products for clients in a fully remote team using Flutter, Firebase, Vue, and Node.js.",
+      "stack": ["Flutter", "Firebase", "Vue", "Node.js"]
+    },
+    {
+      "role": "Web & Mobile Developer",
+      "company": "Cynoco.co.uk",
+      "period": "Mar 2020 — Feb 2022",
+      "startDate": "2020-03",
+      "description": "Delivered Vue web interfaces and Flutter and Kotlin mobile applications from design handoff through production release.",
+      "stack": ["Flutter", "Vue", "Kotlin"]
+    }
+  ],
+  "skillGroups": [
+    { "name": "Web", "technologies": ["TypeScript", "React", "Next.js", "Vue"] },
+    { "name": "Backend", "technologies": ["Node.js", "Go", "PostgreSQL", "MongoDB", "Redis"] },
+    { "name": "Mobile", "technologies": ["Flutter", "Kotlin"] },
+    { "name": "Infrastructure and services", "technologies": ["Docker", "Cloudflare", "AWS", "Stripe"] }
+  ]
+}

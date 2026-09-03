@@ -1,21 +1,21 @@
-export function Portrait(props: { class?: string }) {
+export function Portrait(props: { className?: string; alt?: string }) {
   return (
     <div
       data-reveal
-      class={`${props.class ?? ''} portrait-slices`}
+      className={`${props.className ?? ''} portrait-slices`}
       role="img"
-      aria-label="Portrait of Morteza Omar Mohammadi"
+      aria-label={props.alt ?? 'Portrait of Morteza Omar Mohammadi'}
     >
-      <div class="portrait-slices__stage" aria-hidden="true">
+      <div className="portrait-slices__stage" aria-hidden="true">
         <svg
-          class="portrait-slices__image"
+          className="portrait-slices__image"
           viewBox="0 0 520 520"
           role="presentation"
         >
           <defs>
             <radialGradient id="portrait-edge-fade">
-              <stop offset="72%" stop-color="white" />
-              <stop offset="100%" stop-color="black" />
+              <stop offset="72%" stopColor="white" />
+              <stop offset="100%" stopColor="black" />
             </radialGradient>
             <mask id="portrait-soft-mask">
               <rect
@@ -29,7 +29,7 @@ export function Portrait(props: { class?: string }) {
             </mask>
           </defs>
           <g
-            class="portrait-slices__backdrop"
+            className="portrait-slices__backdrop"
             transform="translate(260 260) scale(1.2) rotate(-35) translate(-260 -260)"
           >
             <rect x="130" y="140" width="230" height="37" rx="18.5" />
