@@ -1,205 +1,92 @@
-Welcome to your new TanStack Start app!
+# mortezaom.dev — portfolio + CMS
 
-# Content CMS (portfolio data + admin panel)
-
-All page content lives in a Turso embedded DB (`DB_FILE_NAME`, default
-`./data/portfolio.db`) via `drizzle-orm@rc` + `@tursodatabase/database`.
+Single-page portfolio (TanStack Start, React 19, Tailwind v4, shadcn) with
+all page content in an embedded Turso DB (`DB_FILE_NAME`, default
+`./data/portfolio.db`) via `drizzle-orm@1.0.0-rc.4` + `@tursodatabase/database`.
 `content/portfolio.json` is the git-tracked source of truth — seed and backup
 format for both the CLI and the admin panel.
+
+Stack: TanStack Start/Router + Vite 8, Nitro 3 (Node server), Drizzle +
+sqlite dialect, `oxlint` + `oxfmt`.
 
 ## Setup
 
 ```bash
-cp .env.example .env   # then fill ADMIN_* (see below)
-pnpm cms:hash-password --password "<strong-password>"  # -> ADMIN_PASSWORD_HASH
-pnpm db:migrate        # create/migrate data/portfolio.db
-pnpm cms:import        # seed DB from content/portfolio.json
+pnpm install
+cp .env.example .env   # then fill ADMIN_* + SITE_URL below
+pnpm cms:hash-password              # interactive prompt -> paste as ADMIN_PASSWORD_HASH
+pnpm db:migrate                     # create/migrate data/portfolio.db
+pnpm cms:import                      # seed DB from content/portfolio.json
+pnpm dev                             # vite dev on :3000
 ```
 
-Required env: `DB_FILE_NAME`, `SITE_URL`, `ADMIN_USERNAME`,
-`ADMIN_PASSWORD_HASH` (scrypt `salt:key`, never plaintext),
-`ADMIN_SESSION_SECRET` (32+ random chars).
+`cms:hash-password` also accepts `--password <pw>` (warns: leaks to shell
+history) or `ADMIN_PASSWORD` env. Hash format is scrypt `salt:key` (hex) —
+never plaintext.
+
+Required env (`DB_FILE_NAME`, `SITE_URL`, `ADMIN_USERNAME`,
+`ADMIN_PASSWORD_HASH`, `ADMIN_SESSION_SECRET` 32+ chars). See `.env.example`.
 
 ## CLI
 
 ```bash
-pnpm cms:import [--file <path>] [--dry-run]  # validate + replace all content
+pnpm cms:import [--file <path>] [--dry-run]  # validate + replace-all content
 pnpm cms:export [--file <path>]              # dump DB -> JSON (byte-stable)
-pnpm db:migrate                              # apply drizzle migrations
+pnpm cms:hash-password [--password <pw>]     # scrypt salt:key hash
+pnpm db:migrate                              # apply drizzle/ migrations
 pnpm db:generate                             # new migration from schema changes
-pnpm db:push --force                         # dev-only direct schema push
+pnpm db:push                                 # dev-only direct schema push (script already passes --force)
+pnpm db:studio                               # drizzle-kit studio
 ```
 
-`cms:import` also regenerates `public/sitemap.xml` + `public/robots.txt`.
+`cms:import` auto-migrates, then regenerates `public/sitemap.xml` +
+`public/robots.txt` from `site.siteUrl`. Saving **Site** in the admin panel
+does the same. `cms:export` defaults to `content/portfolio.json`.
 
 ## Admin panel
 
-`/admin/login` (env single admin, 12h signed cookie, 5-fail lockout).
-4 pages: **Site & SEO** (+ JSON import/export), **Profile**
-(hero/about/contact/stats), **Work** (spotlight/engineering/archive +
-headers), **Career** (experience + skills). Every save bumps the content
-version, clears the server cache, and revalidates `/` (ISR 3600s).
+`/admin/login` → redirects to `/admin/site`. Env single admin, 12h signed
+`httpOnly` (`SameSite=lax`, `Secure` in prod) cookie + same-origin CSRF check.
+5 failed logins per IP+user → 15min lockout.
+
+4 sections:
+
+- **Site & SEO** — identity/meta/links + JSON import/export (dry-run,
+  pre-import backup to tmpdir + DB dir)
+- **Profile** — hero/about/contact fields + `about` section header + stats
+- **Work** — `spotlight`/`engineering`/`archive` projects + 3 section headers
+- **Career** — experience + skill groups + 2 section headers
+
+Every save bumps `content_version`, clears the server content cache
+(`getPublicContent` memo keyed on version); `/` picks it up on next ISR
+window / loader `staleTime` expiry. Hrefs validated: relative, `#anchor`,
+`http(s)`, `mailto:` only.
+
+## Caching / rendering
+
+- `/`: prerendered + ISR 60s (`Cache-Control: public, s-maxage=60,
+stale-while-revalidate=600`, see `nitro.config.ts` + `src/routes/index.tsx`
+  `headers`). Client loader `staleTime` 5min, `gcTime` 30min.
+- `/admin/**`: SSR-only, `no-store` + `noindex, nofollow`
+  (`X-Robots-Tag` header + meta).
+- Empty/missing DB at runtime falls back to tracked `content/portfolio.json`
+  (build/prerender safety); any other DB error throws.
 
 ## Deploy (VPS, Node)
 
 ```bash
 pnpm build
-node .output/server/index.mjs   # run from repo root; keep data/ on a volume
+pnpm start   # node .output/server/index.mjs, run from repo root
 ```
 
-Back up `data/portfolio.db` + `content/portfolio.json` (Turso embedded is
-beta — JSON is the restorable truth). `/` is prerendered + ISR cached
-(`Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`);
-`/admin/**` is SSR-only, `no-store` + `noindex`.
+Keep `data/` on a persistent volume. Back up `data/portfolio.db` +
+`content/portfolio.json` (embedded Turso is beta — JSON is the restorable
+truth). Security headers + CSP live in `nitro.config.ts`.
 
----
-
-# Getting Started (TanStack boilerplate)
-
-To run this application:
-
-```bash
-pnpm install
-pnpm dev
-```
-
-# Building For Production
-
-To build this application for production:
-
-```bash
-pnpm build
-```
-
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `pnpm add @tailwindcss/vite tailwindcss --dev`
-
-
-## Deploy with Nitro
-
-This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
-
-```bash
-npm run build
-node dist/server/index.mjs
-```
-
-The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
-
-For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
+## Linting & formatting
 
 ```bash
 pnpm lint
 pnpm format
-pnpm check
+pnpm check   # oxfmt --check + oxlint --deny-warnings
 ```
-
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).

@@ -1,0 +1,17 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 200 200"
+  width="200"
+  height="200"
+  role="img"
+  aria-label="Letter M"
+>
+  <title>Letter M Logo</title>
+
+  <rect width="200" height="200" rx="42" fill="#050505" />
+
+  <path
+    fill="#ffffff"
+    d="M47 164V36l53 53 53-53v128h-22V88l-31 31-31-31v76Z"
+  />
+</svg>

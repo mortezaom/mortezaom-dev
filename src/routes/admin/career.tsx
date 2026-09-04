@@ -107,7 +107,6 @@ function CareerPage() {
 
       <div className="flex flex-col gap-4">
         {exp.map((e, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: entries have no stable ids; order is author-managed and inputs are fully controlled
           <Card key={i}>
             <CardContent className="pt-6">
               <div className="mb-4 flex items-center justify-between gap-2">
@@ -290,7 +289,6 @@ function CareerPage() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         {groups.map((g, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: entries have no stable ids; order is author-managed and inputs are fully controlled
           <Card key={i}>
             <CardContent className="pt-6">
               <div className="mb-3 flex items-center justify-between gap-2">

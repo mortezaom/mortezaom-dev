@@ -1,0 +1,27 @@
+{
+  // Oxlint configuration. Replaces Biome's `linter.recommended` + assist.
+  // Docs: https://oxc.rs/docs/guide/usage/linter/config
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "jsx-a11y", "oxc", "react", "typescript", "unicorn"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true,
+  },
+  "settings": {
+    "react": {
+      "version": "19.2.8",
+    },
+  },
+  "ignorePatterns": ["src/routeTree.gen.ts"],
+  "rules": {
+    // Automatic JSX runtime (tsconfig `jsx: react-jsx`); React is never in scope.
+    "react/react-in-jsx-scope": "off",
+    // Colocated pure helpers are an intentional style; Biome never flagged these.
+    "unicorn/consistent-function-scoping": "off",
+  },
+}

@@ -32,14 +32,18 @@ export function IntroLoader(props: {
   const [frame, setFrame] = useState(0);
   const [revealed, setRevealed] = useState(0);
   const [exiting, setExiting] = useState(false);
-  const timers = useRef<number[]>([]);
   const propsRef = useRef(props);
-  propsRef.current = props;
+  // Latest-ref pattern: timeouts scheduled in the mount effect below always
+  // call the newest callbacks without re-subscribing.
+  useEffect(() => {
+    propsRef.current = props;
+  });
 
   useEffect(() => {
+    const timers: number[] = [];
     const later = (callback: () => void, delay: number) => {
       const timer = window.setTimeout(callback, delay);
-      timers.current.push(timer);
+      timers.push(timer);
       return timer;
     };
 
@@ -59,7 +63,7 @@ export function IntroLoader(props: {
       () => setFrame((value) => value + 1),
       90,
     );
-    timers.current.push(glyphTimer);
+    timers.push(glyphTimer);
     later(() => setInitial(false), 420);
 
     const beginReveal = () => {
@@ -76,7 +80,7 @@ export function IntroLoader(props: {
           later(finish, 540);
         }, 800);
       }, 24);
-      timers.current.push(revealTimer);
+      timers.push(revealTimer);
     };
 
     const minimum = new Promise<void>((resolve) => later(resolve, 820));
@@ -86,12 +90,8 @@ export function IntroLoader(props: {
     const maximum = new Promise<void>((resolve) => later(resolve, 980));
     Promise.race([Promise.all([minimum, font]), maximum]).then(beginReveal);
 
-    const copy = [...timers.current];
     return () => {
-      copy.forEach((timer) => {
-        window.clearTimeout(timer);
-      });
-      timers.current.forEach((timer) => {
+      timers.forEach((timer) => {
         window.clearTimeout(timer);
       });
       if (typeof document !== 'undefined') {
@@ -126,7 +126,6 @@ export function IntroLoader(props: {
                     : line.split('').map((character, idx) => {
                         const position = lineOffset + idx;
                         return (
-                          // biome-ignore lint/suspicious/noArrayIndexKey: character position is the identity
                           <span key={idx}>
                             {position < revealed
                               ? character
@@ -141,10 +140,8 @@ export function IntroLoader(props: {
             <>
               <span className="intro-loader__line">LOADING</span>
               {INITIAL_RANDOM_LENGTHS.map((length, line) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: fixed 2-line placeholder, order never changes
                 <span key={line} className="intro-loader__line">
                   {Array.from({ length }).map((_, index) => (
-                    // biome-ignore lint/suspicious/noArrayIndexKey: glyph position is the identity
                     <span key={index}>{glyph(line * 8 + index, frame)}</span>
                   ))}
                 </span>

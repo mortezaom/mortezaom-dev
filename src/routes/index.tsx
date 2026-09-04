@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { motion } from 'motion/react';
 import {
   type ComponentType,
   Fragment,
@@ -19,6 +18,7 @@ import {
 } from '../components/icons';
 import { Portrait } from '../components/portrait';
 import type { PublicContent } from '../lib/content';
+import { initPointerEffects } from '../lib/pointer-effects';
 import { getContentFn } from '../server/content';
 
 export const Route = createFileRoute('/')({
@@ -149,54 +149,8 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState('home');
   const [copied, setCopied] = useState(false);
-  const [customCursor, setCustomCursor] = useState({
-    x: 0,
-    y: 0,
-    visible: false,
-  });
 
-  const trackCursor = (event: React.MouseEvent) => {
-    const target = event.currentTarget as HTMLElement;
-
-    if (target.classList.contains('halo-target')) {
-      const rect = target.getBoundingClientRect();
-      target.style.setProperty('--mouse-x', `${event.clientX - rect.left}px`);
-      target.style.setProperty('--mouse-y', `${event.clientY - rect.top}px`);
-    }
-  };
-
-  const revealTimer = useRef(0);
-
-  useEffect(() => {
-    const trackPointer = (event: MouseEvent) => {
-      setCustomCursor((cursor) => ({
-        x: event.clientX,
-        y: event.clientY,
-        visible: cursor.visible,
-      }));
-      if (!revealTimer.current) {
-        revealTimer.current = window.setTimeout(() => {
-          revealTimer.current = 0;
-          setCustomCursor((current) => ({ ...current, visible: true }));
-        }, 60);
-      }
-    };
-    const hidePointer = () => {
-      if (revealTimer.current) {
-        clearTimeout(revealTimer.current);
-        revealTimer.current = 0;
-      }
-      setCustomCursor((cursor) => ({ ...cursor, visible: false }));
-    };
-
-    window.addEventListener('mousemove', trackPointer, { passive: true });
-    document.documentElement.addEventListener('mouseleave', hidePointer);
-    return () => {
-      if (revealTimer.current) clearTimeout(revealTimer.current);
-      window.removeEventListener('mousemove', trackPointer);
-      document.documentElement.removeEventListener('mouseleave', hidePointer);
-    };
-  }, []);
+  useEffect(() => initPointerEffects(), []);
 
   const menuEl = useRef<HTMLDivElement>(null);
 
@@ -206,16 +160,6 @@ function App() {
       document.body.style.overflow = '';
     };
   }, [menuOpen]);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle(
-      'custom-cursor-active',
-      customCursor.visible,
-    );
-    return () => {
-      document.documentElement.classList.remove('custom-cursor-active');
-    };
-  }, [customCursor.visible]);
 
   const copyEmail = async () => {
     try {
@@ -306,11 +250,7 @@ function App() {
         Skip to content
       </a>
 
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: mouse movement only positions a decorative cursor and highlight */}
-      <header
-        className="top-0 z-500 sticky bg-bg/85 backdrop-blur-md border-line border-b cursor-zone site-header halo-target halo-cell"
-        onMouseMove={trackCursor}
-      >
+      <header className="top-0 z-500 sticky bg-bg/85 backdrop-blur-md border-line border-b cursor-zone site-header halo-target halo-cell">
         <div className={`${WRAP} flex items-center justify-between h-17`}>
           <a
             href="#home"
@@ -430,11 +370,7 @@ function App() {
                 </div>
               </div>
 
-              {/* biome-ignore lint/a11y/noStaticElementInteractions: mouse movement only positions a decorative cursor and highlight */}
-              <div
-                className="flex max-[1100px]:flex-col justify-between items-center max-[1100px]:items-start gap-8 max-[1100px]:gap-6 mt-[clamp(28px,4vw,52px)] py-[clamp(20px,2.6vw,30px)] border-line border-t overflow-visible cursor-zone halo-target halo-cell"
-                onMouseMove={trackCursor}
-              >
+              <div className="flex max-[1100px]:flex-col justify-between items-center max-[1100px]:items-start gap-8 max-[1100px]:gap-6 mt-[clamp(28px,4vw,52px)] py-[clamp(20px,2.6vw,30px)] border-line border-t overflow-visible cursor-zone halo-target halo-cell">
                 <p className="font-tight font-semibold text-[clamp(16px,1.8vw,23px)] leading-[1.2] tracking-[-0.02em]">
                   {profile.heroTagline}
                 </p>
@@ -467,13 +403,11 @@ function App() {
               <div className="flex-1" aria-hidden="true" />
             </div>
 
-            {/* biome-ignore lint/a11y/noStaticElementInteractions: mouse movement only positions a decorative cursor and highlight */}
             <div
               data-reveal
-              className={`${REVEAL} cursor-zone halo-target frame-card mt-[clamp(36px,5vw,76px)] rounded-none bg-surface p-[clamp(26px,4vw,54px)] grid gap-[clamp(32px,4vw,48px)]`}
-              onMouseMove={trackCursor}
+              className={`${REVEAL} cursor-zone halo-target frame-card overflow-hidden mt-[clamp(36px,5vw,76px)] rounded-none bg-surface p-[clamp(26px,4vw,54px)] grid gap-[clamp(32px,4vw,48px)]`}
             >
-              <span className="halo-overlay" aria-hidden="true" />
+              <span className="halo-light" aria-hidden="true" />
               <div className="z-1 relative">
                 <h2 className="font-tight font-semibold text-[clamp(26px,3.4vw,44px)] leading-[1.04] tracking-[-0.045em]">
                   {profile.heroCardTitle}
@@ -504,10 +438,8 @@ function App() {
         </section>
 
         <section id="about" className={`${ANCHOR} py-[clamp(72px,9vw,120px)]`}>
-          {/* biome-ignore lint/a11y/noStaticElementInteractions: mouse movement only positions a decorative cursor and highlight */}
           <div
             className={`${WRAP} about-halo cursor-zone halo-target halo-cell overflow-visible grid grid-cols-[minmax(0,1fr)_minmax(380px,520px)] gap-[clamp(48px,8vw,112px)] items-center max-wide:grid-cols-1`}
-            onMouseMove={trackCursor}
           >
             <div data-reveal className={REVEAL}>
               <h2 className={SEC_H2}>
@@ -515,7 +447,6 @@ function App() {
               </h2>
               {profile.aboutParagraphs.map((p, i) => (
                 <p
-                  // biome-ignore lint/suspicious/noArrayIndexKey: static display content, order never changes
                   key={i}
                   className={`${i === 0 ? 'mt-6' : 'mt-3'} max-w-[58ch] text-[clamp(15px,1.5vw,18px)] text-dim leading-[1.52] tracking-[-0.012em] [word-spacing:-0.035em]`}
                 >
@@ -554,7 +485,6 @@ function App() {
                   key={project.name}
                   data-reveal
                   className={`${REVEAL} project-card halo-target grid grid-cols-[.72fr_1.28fr] gap-[clamp(28px,6vw,80px)] border-b border-line py-[clamp(36px,5vw,64px)] last:border-b-0 max-wide:grid-cols-1 max-wide:gap-6`}
-                  onMouseMove={trackCursor}
                 >
                   <div>
                     <p className={LABEL2}>{project.category}</p>
@@ -717,19 +647,13 @@ function App() {
               </h2>
               <p className={SEC_P}>{section('experience')?.copy}</p>
             </div>
-            {/* biome-ignore lint/a11y/noStaticElementInteractions: mouse movement only positions a decorative highlight */}
             <div
               data-reveal
               className={`${REVEAL} cursor-zone mt-[clamp(40px,5vw,56px)] border-t border-line`}
-              onMouseMove={trackCursor}
             >
               {content.experience.map((x) => (
                 <div key={x.role + x.company + x.period}>
-                  {/* biome-ignore lint/a11y/noStaticElementInteractions: mouse movement only positions a decorative highlight */}
-                  <div
-                    className="items-start gap-6 max-nav:gap-2 grid grid-cols-[150px_1fr] max-nav:grid-cols-1 px-2.5 max-nav:px-1 py-8 max-nav:py-6.5 border-line border-b halo-target halo-cell"
-                    onMouseMove={trackCursor}
-                  >
+                  <div className="items-start gap-6 max-nav:gap-2 grid grid-cols-[150px_1fr] max-nav:grid-cols-1 px-2.5 max-nav:px-1 py-8 max-nav:py-6.5 border-line border-b halo-target halo-cell">
                     <span className="pt-1.5 max-nav:pt-0 font-medium text-[12px] text-dim2 whitespace-nowrap">
                       {x.period}
                     </span>
@@ -765,7 +689,6 @@ function App() {
             <div data-reveal className={REVEAL}>
               <h2 className="font-tight font-semibold text-[clamp(30px,3.6vw,46px)] leading-[1.06] tracking-[-0.045em]">
                 {(section('skills')?.title ?? '').split('\n').map((line, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: title lines have no stable ids; order is author-managed
                   <Fragment key={i}>
                     {i > 0 && <br />}
                     {line}
@@ -776,11 +699,9 @@ function App() {
             <div data-reveal className={`${REVEAL} frame-card`}>
               <div className="grid grid-cols-2 max-sm:grid-cols-1 border-line border-t border-l">
                 {content.skillGroups.map((group) => (
-                  // biome-ignore lint/a11y/noStaticElementInteractions: mouse movement only positions a decorative cursor and highlight
                   <div
                     key={group.name}
                     className="p-[clamp(22px,3vw,34px)] border-line border-r border-b min-h-42.5 text-center halo-target halo-cell"
-                    onMouseMove={trackCursor}
                   >
                     <h3 className={LABEL2}>{group.name}</h3>
                     <div className="flex flex-wrap justify-center gap-y-2 mt-6">
@@ -928,21 +849,10 @@ function App() {
         </div>
       </footer>
 
-      <motion.div
-        aria-hidden="true"
-        className="site-cursor"
-        initial={{ opacity: 0 }}
-        animate={{
-          x: customCursor.x - 9,
-          y: customCursor.y - 9,
-          opacity: customCursor.visible ? 1 : 0,
-        }}
-        transition={{
-          duration: customCursor.visible ? 0.045 : 0,
-          ease: 'easeOut',
-          opacity: { duration: 0.08 },
-        }}
-      />
+      <div aria-hidden="true" className="site-cursor">
+        <span className="cursor-default" aria-hidden="true" />
+        <span className="cursor-interactive" aria-hidden="true" />
+      </div>
     </>
   );
 }

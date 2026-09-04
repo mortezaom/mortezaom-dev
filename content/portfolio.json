@@ -39,14 +39,24 @@
       "title": "Focused systems and engineering work.",
       "copy": "Open-source projects, backend systems, and technical builds that explore a specific problem in more depth."
     },
-    { "key": "workArchive", "eyebrow": "From the Archive", "title": "Earlier work that shaped my experience.", "copy": null },
+    {
+      "key": "workArchive",
+      "eyebrow": "From the Archive",
+      "title": "Earlier work that shaped my experience.",
+      "copy": null
+    },
     {
       "key": "experience",
       "eyebrow": null,
       "title": "Experience",
       "copy": "My work has progressed from web and mobile development to leading complete product builds across backend, web, mobile, and payments."
     },
-    { "key": "skills", "eyebrow": null, "title": "Tools I use to\nbuild and ship", "copy": null }
+    {
+      "key": "skills",
+      "eyebrow": null,
+      "title": "Tools I use to\nbuild and ship",
+      "copy": null
+    }
   ],
   "navLinks": [
     { "label": "About", "href": "#about" },
@@ -60,8 +70,16 @@
     { "label": "Résumé", "href": "/Morteza-Omar-Mohammadi-CV.pdf" }
   ],
   "socials": [
-    { "label": "GitHub", "href": "https://github.com/mortezaom", "icon": "github" },
-    { "label": "LinkedIn", "href": "https://linkedin.com/in/mortezaom", "icon": "linkedin" },
+    {
+      "label": "GitHub",
+      "href": "https://github.com/mortezaom",
+      "icon": "github"
+    },
+    {
+      "label": "LinkedIn",
+      "href": "https://linkedin.com/in/mortezaom",
+      "icon": "linkedin"
+    },
     { "label": "X", "href": "https://x.com/mortezaaom", "icon": "x" },
     { "label": "Email", "href": "mailto:hi@mortezaom.dev", "icon": "mail" }
   ],
@@ -87,7 +105,15 @@
       "role": "Lead Developer · November 2024 — Present",
       "status": null,
       "linkLabel": "Visit Bilit.Events",
-      "technologies": ["TypeScript", "Node.js", "React", "Flutter", "MongoDB", "Redis", "Stripe"]
+      "technologies": [
+        "TypeScript",
+        "Node.js",
+        "React",
+        "Flutter",
+        "MongoDB",
+        "Redis",
+        "Stripe"
+      ]
     },
     {
       "kind": "spotlight",
@@ -153,7 +179,15 @@
       "period": "Nov 2024 — Present",
       "startDate": "2024-11",
       "description": "Leading engineering across ticketing services, payments, background processing, the customer web application, and the Flutter scanner app.",
-      "stack": ["Node.js", "MongoDB", "Redis", "BullMQ", "React", "Stripe", "Flutter"]
+      "stack": [
+        "Node.js",
+        "MongoDB",
+        "Redis",
+        "BullMQ",
+        "React",
+        "Stripe",
+        "Flutter"
+      ]
     },
     {
       "role": "Application Developer",
@@ -173,9 +207,18 @@
     }
   ],
   "skillGroups": [
-    { "name": "Web", "technologies": ["TypeScript", "React", "Next.js", "Vue"] },
-    { "name": "Backend", "technologies": ["Node.js", "Go", "PostgreSQL", "MongoDB", "Redis"] },
+    {
+      "name": "Web",
+      "technologies": ["TypeScript", "React", "Next.js", "Vue"]
+    },
+    {
+      "name": "Backend",
+      "technologies": ["Node.js", "Go", "PostgreSQL", "MongoDB", "Redis"]
+    },
     { "name": "Mobile", "technologies": ["Flutter", "Kotlin"] },
-    { "name": "Infrastructure and services", "technologies": ["Docker", "Cloudflare", "AWS", "Stripe"] }
+    {
+      "name": "Infrastructure and services",
+      "technologies": ["Docker", "Cloudflare", "AWS", "Stripe"]
+    }
   ]
 }

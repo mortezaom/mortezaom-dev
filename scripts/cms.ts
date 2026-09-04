@@ -1,3 +1,4 @@
+// oxlint-disable-next-line import/no-unassigned-import -- dotenv side-effect import loads .env
 import 'dotenv/config';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
@@ -84,7 +85,7 @@ async function main() {
 
 /** Read a line from stdin (used for passwords; avoids history/ps leaks). */
 function promptHidden(prompt: string): Promise<string> {
-  return new Promise((resolve) => {
+  return new Promise((done) => {
     const { stdin, stdout } = process;
     stdout.write(prompt);
     stdin.setEncoding('utf8');
@@ -92,7 +93,7 @@ function promptHidden(prompt: string): Promise<string> {
     const onData = (chunk: string) => {
       stdin.pause();
       stdin.removeListener('data', onData);
-      resolve(chunk.replace(/[\r\n]+$/, ''));
+      done(chunk.replace(/[\r\n]+$/, ''));
     };
     stdin.on('data', onData);
   });

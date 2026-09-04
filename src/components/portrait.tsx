@@ -1,5 +1,6 @@
 export function Portrait(props: { className?: string; alt?: string }) {
   return (
+    /* oxlint-disable jsx-a11y/prefer-tag-over-role -- composed SVG scene, cannot be a native img */
     <div
       data-reveal
       className={`${props.className ?? ''} portrait-slices`}
@@ -53,5 +54,6 @@ export function Portrait(props: { className?: string; alt?: string }) {
         </svg>
       </div>
     </div>
+    /* oxlint-enable jsx-a11y/prefer-tag-over-role */
   );
 }

@@ -1,3 +1,4 @@
+// oxlint-disable-next-line import/no-unassigned-import -- dotenv side-effect import loads .env
 import 'dotenv/config';
 import { isAbsolute, resolve } from 'node:path';
 import { defineConfig } from 'drizzle-kit';

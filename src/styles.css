@@ -1,7 +1,7 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/outfit";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/outfit';
 /*---break---*/
 @custom-variant dark (&:is(.dark *));
 
@@ -49,7 +49,7 @@
   --sidebar-ring: oklch(0.723 0.014 214.4);
 }
 
-[data-theme="light"] {
+[data-theme='light'] {
   --c-bg: #ffffff;
   --c-surface: #f4f4f3;
   --c-raised: #e9eaec;
@@ -72,8 +72,8 @@
   --color-dim: var(--c-dim);
   --color-dim2: var(--c-dim2);
 
-  --font-sans: "Elms Sans", system-ui, sans-serif;
-  --font-tight: "Syne", sans-serif;
+  --font-sans: 'Elms Sans', system-ui, sans-serif;
+  --font-tight: 'Syne', sans-serif;
   /*--font-sans: 'Syne', system-ui, sans-serif;
   --font-tight: 'Elms Sans', sans-serif;*/
 
@@ -128,7 +128,7 @@
     background-color: var(--c-bg);
   }
 
-  [data-theme="light"] {
+  [data-theme='light'] {
     color-scheme: light;
   }
 
@@ -148,13 +148,13 @@
   /* Admin-only surface: keep public styling untouched (1:1). */
   .admin-shadcn {
     @apply bg-background text-foreground;
-    --font-sans: "Outfit Variable", system-ui, sans-serif;
+    --font-sans: 'Outfit Variable', system-ui, sans-serif;
   }
   .admin-shadcn * {
     @apply border-border outline-ring/50;
   }
   button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  [role='button']:not(:disabled) {
     cursor: pointer;
   }
 }
@@ -225,7 +225,7 @@
     position: absolute;
     z-index: 2;
     pointer-events: none;
-    content: "";
+    content: '';
   }
 
   .frame-card::before {
@@ -241,8 +241,8 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    html.custom-cursor-active:not(:has(.intro-loader:not(.is-exiting))) body,
-    html.custom-cursor-active:not(:has(.intro-loader:not(.is-exiting))) body * {
+    html.custom-cursor-active body,
+    html.custom-cursor-active body * {
       cursor: none;
     }
   }
@@ -254,21 +254,48 @@
     overflow: hidden;
   }
 
+  /* Movable halo layer: a pre-rendered radial blob positioned with
+     `transform` only. JS writes `--halo-x`/`--halo-y` (pseudo-element) or
+     sets `transform` directly (`.halo-light` child); the gradient itself is
+     never regenerated per pointer position. */
   .project-card::before,
-  .halo-cell::before,
-  .halo-overlay {
+  .halo-cell::before {
     position: absolute;
     z-index: 0;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 720px;
+    height: 720px;
     pointer-events: none;
     background: radial-gradient(
-      360px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      rgb(255 255 255 / 7%),
+      circle 360px at center,
+      rgb(255 255 255 / 4%),
       transparent 70%
     );
     opacity: 0;
-    content: "";
+    content: '';
+    transform: translate3d(var(--halo-x, -360px), var(--halo-y, -360px), 0);
     transition: opacity 300ms var(--ease-smooth);
+    will-change: transform, opacity;
+  }
+
+  .halo-light,
+  .halo-overlay {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 0;
+    width: 720px;
+    height: 720px;
+    pointer-events: none;
+    background: radial-gradient(
+      circle 360px at center,
+      rgb(255 255 255 / 4%),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 300ms var(--ease-smooth);
+    will-change: transform, opacity;
   }
 
   .project-card > *,
@@ -279,6 +306,7 @@
 
   .project-card:hover::before,
   .halo-cell:hover::before,
+  .halo-target:hover > .halo-light,
   .halo-target:hover > .halo-overlay {
     opacity: 1;
   }
@@ -305,31 +333,71 @@
     height: 18px;
     pointer-events: none;
     mix-blend-mode: difference;
+    opacity: 0;
+    transition: opacity 180ms ease;
+    will-change: transform;
   }
 
-  .site-cursor::before {
+  .site-cursor.is-visible {
+    opacity: 1;
+  }
+
+  .site-cursor .cursor-default,
+  .site-cursor .cursor-interactive {
     position: absolute;
     inset: 0;
     background: #fff;
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+    will-change: opacity, transform;
+  }
+
+  .site-cursor .cursor-default {
+    opacity: 1;
     clip-path: path(
-      "M 9 0 C 14 0 18 4 18 9 C 18 14 14 18 9 18 C 4 18 0 14 0 9 C 0 4 4 0 9 0 Z"
+      'M 9 0 C 14 0 18 4 18 9 C 18 14 14 18 9 18 C 4 18 0 14 0 9 C 0 4 4 0 9 0 Z'
     );
-    content: "";
     transform: rotate(13deg);
   }
 
-  body:has(
-      :is(a, button, input, select, textarea, summary, [role="button"]):hover
-    )
-    .site-cursor::before {
+  .site-cursor .cursor-interactive {
+    opacity: 0;
     clip-path: path(
-      "M 2 1 C 1.1 0.7 0.7 1.1 1 2 C 2.4 6.8 3.9 11.8 5.4 16.7 C 5.9 18.2 7.8 18.4 8.6 17 C 10.7 13.2 13.3 10.7 17 8.6 C 18.4 7.8 18.2 5.9 16.7 5.4 C 11.8 3.9 6.8 2.4 2 1 Z"
+      'M 2 1 C 1.1 0.7 0.7 1.1 1 2 C 2.4 6.8 3.9 11.8 5.4 16.7 C 5.9 18.2 7.8 18.4 8.6 17 C 10.7 13.2 13.3 10.7 17 8.6 C 18.4 7.8 18.2 5.9 16.7 5.4 C 11.8 3.9 6.8 2.4 2 1 Z'
     );
+    transform: scale(0.85);
+  }
+
+  .site-cursor.is-interactive .cursor-default {
+    opacity: 0;
+    transform: rotate(13deg) scale(0.75);
+  }
+
+  .site-cursor.is-interactive .cursor-interactive {
+    opacity: 1;
+    transform: scale(1);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .site-cursor {
       display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-cursor,
+    .site-cursor .cursor-default,
+    .site-cursor .cursor-interactive {
+      transition: none;
+    }
+
+    .project-card::before,
+    .halo-cell::before,
+    .halo-light,
+    .halo-overlay {
+      opacity: 0 !important;
+      transition: none;
     }
   }
 }
@@ -450,7 +518,7 @@ html:has(.intro-loader)::-webkit-scrollbar-thumb {
 .intro-loader__name {
   width: min(100%, 1192px);
   margin-inline: auto;
-  font-family: "Syne", sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: clamp(42px, 7.2vw, 118px);
   font-weight: 600;
   line-height: 0.85;

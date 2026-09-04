@@ -147,7 +147,6 @@ function ProfilePage() {
               />
             </Field>
             {paragraphs.map((p, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: paragraphs are plain strings with no stable ids; inputs are fully controlled
               <div key={i} className="flex items-start gap-2">
                 <Textarea
                   className="flex-1"
@@ -198,7 +197,6 @@ function ProfilePage() {
         <CardContent>
           <div className="flex flex-col gap-2">
             {stats.map((s, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: stats have no stable client ids; order is author-managed and inputs are fully controlled
               <div key={i} className="flex items-center gap-2">
                 <Input
                   placeholder="Value"

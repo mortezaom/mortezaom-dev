@@ -123,7 +123,6 @@ export function LinkList(props: {
       <CardContent>
         <div className="flex flex-col gap-2">
           {props.rows.map((row, i) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: rows have no stable ids; order is author-managed and inputs are fully controlled
             <div key={i} className="flex items-center gap-2">
               <Input
                 placeholder="Label"
