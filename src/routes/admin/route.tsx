@@ -13,6 +13,10 @@ import { ThemeProvider, useTheme } from '@/components/theme-provider';
 import { logoutFn, sessionFn } from '../../server/admin';
 
 export const Route = createFileRoute('/admin')({
+  // No SEO value here (noindex, no-store): run auth + loaders on the
+  // server but skip server-rendering the component. SSR HTML carries the
+  // pending skeleton; the client renders AdminLayout after hydration.
+  ssr: 'data-only',
   beforeLoad: async ({ location }) => {
     const s = await sessionFn().catch(() => ({ user: null }));
     if (!s.user && location.pathname !== '/admin/login') {
@@ -28,6 +32,7 @@ export const Route = createFileRoute('/admin')({
     'Cache-Control': 'no-store',
   }),
   component: AdminLayout,
+  pendingComponent: AdminPending,
   notFoundComponent: AdminNotFound,
 });
 
@@ -48,6 +53,31 @@ function ForceDarkTheme() {
     setTheme('dark');
   }, [setTheme]);
   return null;
+}
+
+function AdminPending() {
+  return (
+    <div className="bg-background min-h-screen text-foreground admin-shadcn">
+      <header className="top-0 z-50 sticky bg-background/90 backdrop-blur border-b">
+        <div className="flex justify-between items-center gap-4 mx-auto px-6 max-w-275 h-16">
+          <div className="bg-muted w-16 h-5 animate-pulse" />
+          <div className="flex gap-1">
+            <div className="bg-muted w-20 h-8 animate-pulse" />
+            <div className="bg-muted w-20 h-8 animate-pulse" />
+            <div className="bg-muted w-20 h-8 animate-pulse" />
+          </div>
+          <div className="bg-muted w-18 h-8 animate-pulse" />
+        </div>
+      </header>
+      <main className="mx-auto px-6 py-8 max-w-275">
+        <div className="bg-muted w-48 h-7 animate-pulse" />
+        <div className="space-y-3 mt-6">
+          <div className="bg-muted w-full h-24 animate-pulse" />
+          <div className="bg-muted w-full h-24 animate-pulse" />
+        </div>
+      </main>
+    </div>
+  );
 }
 
 function AdminLayout() {
