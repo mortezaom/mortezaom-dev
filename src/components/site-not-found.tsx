@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { ArrowR, ArrowUR } from './icons';
+import { ArrowR } from './icons';
 
 const WRAP = 'max-w-[1240px] mx-auto px-6';
 const BTN =
@@ -8,8 +8,8 @@ const LABEL = 'text-[11px] uppercase tracking-[.16em] text-dim2 font-semibold';
 
 export function SiteNotFound() {
   return (
-    <div className="relative flex flex-col h-dvh overflow-hidden select-none">
-      <header className="z-10 bg-bg/85 backdrop-blur-md border-line border-b">
+    <div className="relative flex min-h-dvh flex-col overflow-hidden select-none">
+      <header className="absolute inset-x-0 top-0 z-10 bg-bg/85 backdrop-blur-md border-line border-b">
         <div className={`${WRAP} flex items-center justify-between h-17`}>
           <Link
             to="/"
@@ -23,8 +23,10 @@ export function SiteNotFound() {
         </div>
       </header>
 
-      <main className={`${WRAP} z-10 flex w-full flex-1 items-center py-8`}>
-        <section>
+      <main
+        className={`${WRAP} z-10 mx-auto flex w-full flex-1 items-center justify-center px-6 pt-25 pb-10`}
+      >
+        <section className="flex flex-col items-center text-center">
           <p className={LABEL}>404 — Page not found</p>
           <h1 className="mt-4 font-tight font-semibold text-[clamp(56px,10vw,128px)] leading-[0.85] tracking-[-0.055em]">
             404
@@ -37,16 +39,16 @@ export function SiteNotFound() {
             Head back home or get in touch and I&apos;ll point you the right
             way.
           </p>
-          <div className="flex max-sm:flex-col max-sm:items-stretch gap-3 mt-7">
+          <div className="flex max-sm:flex-col max-sm:items-stretch justify-center gap-3 mt-7">
             <Link to="/" className={`${BTN} px-6.5 py-2.75 justify-center`}>
               Back home <ArrowR />
             </Link>
-            <a
-              href="/#contact"
+            <Link
+              to="/contact"
               className="inline-flex justify-center items-center gap-2 px-6.5 py-2.75 border border-edge hover:border-ink font-medium text-[14px] transition-colors duration-300"
             >
-              Contact me <ArrowUR size={12} />
-            </a>
+              Contact me <ArrowR />
+            </Link>
           </div>
         </section>
       </main>
