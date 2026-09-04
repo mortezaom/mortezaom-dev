@@ -44,6 +44,9 @@ importers:
       lucide-react:
         specifier: ^1.40.0
         version: 1.40.0(react@19.2.8)
+      mortezaom-dev:
+        specifier: 'link:'
+        version: 'link:'
       motion:
         specifier: ^13.2.0
         version: 13.2.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)

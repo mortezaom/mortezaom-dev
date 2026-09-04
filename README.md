@@ -76,8 +76,18 @@ stale-while-revalidate=600`, see `nitro.config.ts` + `src/routes/index.tsx`
 
 ```bash
 pnpm build
-pnpm start   # node .output/server/index.mjs, run from repo root
+pm2 start ecosystem.config.cjs   # fork, 1 instance (SQLite), from repo root
 ```
+
+Env comes from `.env` (see `.env.example`); use an absolute `DB_FILE_NAME`
+in production. `NODE_ENV=production` is required (Secure cookies).
+`ecosystem.config.cjs` holds no secrets — safe to commit.
+
+Suggested front: nginx reverse proxy (serve `/assets/*` from
+`.output/public` with 1y immutable, proxy the rest with `Host` +
+`X-Forwarded-Proto` headers) + Cloudflare in front (Full Strict,
+Always Use HTTPS, Rocket Loader off, no edge HTML caching — origin ISR
+handles `/`). Rate-limit `/admin/*` at proxy or WAF level.
 
 Keep `data/` on a persistent volume. Back up `data/portfolio.db` +
 `content/portfolio.json` (embedded Turso is beta — JSON is the restorable
