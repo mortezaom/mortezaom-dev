@@ -1,6 +1,14 @@
 // Production process file. No secrets here — everything sensitive comes
 // from `.env` (gitignored, see `.env.example`). Run from the repo root:
 //   pnpm run build && pm2 start ecosystem.config.cjs
+//
+// `.env` is loaded below so PORT/HOST/etc. set there are respected.
+// Shell env still wins over `.env` (dotenv never overrides existing vars).
+const { resolve } = require('node:path');
+const { config } = require('dotenv');
+
+// Pin to the repo root so this works no matter where `pm2 start` runs.
+config({ path: resolve(__dirname, '.env') });
 module.exports = {
   apps: [
     {
