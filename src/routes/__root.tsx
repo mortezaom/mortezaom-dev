@@ -12,7 +12,7 @@ import { getTrackingSnippetFn } from '../server/content';
 import styleCss from '../styles.css?url';
 
 const JS_FLAG =
-  "document.documentElement.classList.add('js');history.scrollRestoration='manual';const h=location.hash;if(h){document.documentElement.dataset.initialHash=h;history.replaceState(history.state,'',location.pathname+location.search)}scrollTo(0,0)";
+  "document.documentElement.classList.add('js');history.scrollRestoration='manual';scrollTo(0,0)";
 
 export const Route = createRootRoute({
   head: ({ matches }) => {
@@ -89,72 +89,7 @@ export const Route = createRootRoute({
       : undefined,
 });
 
-/** Same-page section id for an anchor, else null. */
-function getSamePageHashId(link: HTMLAnchorElement): string | null {
-  const raw = link.getAttribute('href');
-  if (!raw) return null;
-  if (link.target && link.target !== '_self') return null;
-  if (link.origin !== location.origin) return null;
-  let url: URL;
-  try {
-    url = new URL(link.href, location.href);
-  } catch {
-    return null;
-  }
-  if (!url.hash) return null;
-  if (url.pathname !== location.pathname || url.search !== location.search)
-    return null;
-  try {
-    return decodeURIComponent(url.hash.slice(1));
-  } catch {
-    return url.hash.slice(1);
-  }
-}
-
-function scrollToSection(id: string) {
-  if (!id) {
-    const reduced = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches;
-    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
-    history.replaceState(
-      history.state,
-      '',
-      `${location.pathname}${location.search}`,
-    );
-    return;
-  }
-  const target = document.getElementById(id);
-  if (!target) return;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
-  if (id === 'main' && !target.hasAttribute('tabindex')) {
-    target.setAttribute('tabindex', '-1');
-    target.focus({ preventScroll: true });
-  }
-  history.replaceState(
-    history.state,
-    '',
-    `${location.pathname}${location.search}`,
-  );
-}
-
-/** Defer past the mobile menu's body-overflow unlock. */
-function scheduleSectionScroll(id: string) {
-  const menuOpen =
-    document.body.style.overflow === 'hidden' ||
-    document.getElementById('mobile-menu')?.getAttribute('aria-hidden') ===
-      'false';
-  if (!menuOpen) {
-    requestAnimationFrame(() => scrollToSection(id));
-    return;
-  }
-  window.setTimeout(() => {
-    requestAnimationFrame(() => scrollToSection(id));
-  }, 80);
-}
-
-/** Admin tracking tag: SSR emits markup; updates reinject via createElement (innerHTML scripts never run). data-snippet skips double-run. */
+/** Admin tracking tag: reinject scripts via createElement so they execute. */
 function TrackingSnippet({ snippet }: { snippet: string }) {
   const hostRef = useRef<HTMLDivElement>(null);
 
@@ -192,7 +127,6 @@ function RootComponent() {
   const isAdmin = pathname.startsWith('/admin');
   const [introExiting, setIntroExiting] = useState(false);
   const [introComplete, setIntroComplete] = useState(false);
-  const [initialHash, setInitialHash] = useState('');
   // SSR ships unlocked for crawlers; lock only after hydration.
   const [hydrated, setHydrated] = useState(false);
   const locked = hydrated && !introComplete && !isAdmin;
@@ -200,66 +134,19 @@ function RootComponent() {
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- hydration flag: SSR ships unlocked, lock only after mount
     setHydrated(true);
-    setInitialHash(document.documentElement.dataset.initialHash ?? '');
-    delete document.documentElement.dataset.initialHash;
     window.scrollTo(0, 0);
-
-    const navigateToSection = (event: MouseEvent) => {
-      if (
-        event.defaultPrevented ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      )
-        return;
-      if (!(event.target instanceof Element)) return;
-
-      const link = event.target.closest<HTMLAnchorElement>('a[href]');
-      if (!link) return;
-      const id = getSamePageHashId(link);
-      if (id === null) return;
-
-      event.preventDefault();
-
-      // Intro locks scrolling; queue for after it.
-      if (document.querySelector('.intro-loader')) {
-        document.documentElement.dataset.pendingHash = `#${id}`;
-        return;
-      }
-
-      scheduleSectionScroll(id);
-    };
-
-    const onHashChange = () => {
-      const raw = location.hash;
-      if (!raw) return;
-      // Back/forward + manual hash edits.
-      scrollToSection(raw.slice(1));
-    };
-
-    document.addEventListener('click', navigateToSection);
-    window.addEventListener('hashchange', onHashChange);
-    return () => {
-      document.removeEventListener('click', navigateToSection);
-      window.removeEventListener('hashchange', onHashChange);
-    };
   }, []);
 
+  // Deep links: intro locks scrolling, so jump after it.
   useEffect(() => {
     if (!introComplete || isAdmin) return;
-    const pending = document.documentElement.dataset.pendingHash;
-    delete document.documentElement.dataset.pendingHash;
-    const hash = pending || initialHash;
+    const hash = window.location.hash.slice(1);
     if (!hash) return;
-
     const raf = requestAnimationFrame(() => {
-      scrollToSection(hash.slice(1));
-      setInitialHash('');
+      document.getElementById(hash)?.scrollIntoView({ behavior: 'auto' });
     });
     return () => cancelAnimationFrame(raf);
-  }, [introComplete, initialHash, isAdmin]);
+  }, [introComplete, isAdmin]);
 
   return (
     <html
@@ -283,7 +170,6 @@ function RootComponent() {
             data-intro-ready={
               isAdmin || introExiting || introComplete || undefined
             }
-            inert={locked || undefined}
             aria-hidden={locked ? 'true' : undefined}
           >
             <Outlet />

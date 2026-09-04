@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import {
   type ComponentType,
   Fragment,
+  type MouseEvent as ReactMouseEvent,
   useEffect,
   useRef,
   useState,
@@ -134,6 +135,14 @@ const ICONS: Record<string, ComponentType> = {
   mail: MailIcon,
 };
 
+const decodeId = (value: string) => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
 function App() {
   const content = Route.useLoaderData();
   const profile = content.profile;
@@ -170,6 +179,35 @@ function App() {
       setCopied(false);
     }
   };
+
+  // In-page nav uses buttons that smooth-scroll; no anchor navigation.
+  const goToSection = (href: string) => {
+    const id = decodeId(href.slice(1));
+    setMenuOpen(false);
+    const scroll = () => {
+      const target = document.getElementById(id);
+      if (!target) return;
+      const reduced = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      ).matches;
+      target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+      if (id === 'main' && !target.hasAttribute('tabindex')) {
+        target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
+      }
+    };
+    // Wait for the mobile menu's overflow unlock first.
+    if (document.body.style.overflow === 'hidden') {
+      window.setTimeout(() => requestAnimationFrame(scroll), 80);
+    } else {
+      requestAnimationFrame(scroll);
+    }
+  };
+
+  const onSectionButtonClick =
+    (href: string) => (_e: ReactMouseEvent<HTMLButtonElement>) => {
+      goToSection(href);
+    };
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -243,31 +281,34 @@ function App() {
 
   return (
     <>
-      <a
-        href="#main"
+      <button
+        type="button"
+        onClick={onSectionButtonClick('#main')}
         className="bg-ink px-5 py-3 rounded-none font-medium text-[13px] text-bg skip-link"
       >
         Skip to content
-      </a>
+      </button>
 
       <header className="top-0 z-500 sticky bg-bg/85 backdrop-blur-md border-line border-b cursor-zone site-header halo-target halo-cell">
         <div className={`${WRAP} flex items-center justify-between h-17`}>
-          <a
-            href="#home"
+          <button
+            type="button"
+            onClick={onSectionButtonClick('#home')}
             className="font-tight font-bold text-[20px] tracking-[-0.03em]"
           >
             mortezaom
-          </a>
+          </button>
           <nav aria-label="Main" className="max-nav:hidden flex gap-9">
             {content.navLinks.map((l) => (
-              <a
+              <button
                 key={l.href + l.label}
-                href={l.href}
+                type="button"
+                onClick={onSectionButtonClick(l.href)}
                 aria-current={active === l.href.slice(1) ? 'true' : undefined}
                 className="after:bottom-0 after:left-0 after:absolute relative after:bg-ink py-1 aria-[current]:after:w-full after:w-0 hover:after:w-full after:h-[1.5px] font-medium text-[14px] text-dim aria-[current]:text-ink hover:text-ink after:content-[''] transition-colors after:transition-[width] duration-300 after:duration-300"
               >
                 {l.label}
-              </a>
+              </button>
             ))}
             <a
               href={profile.cvPath}
@@ -320,14 +361,14 @@ function App() {
       >
         <nav aria-label="Mobile" className="flex flex-col mt-11">
           {content.navLinks.map((l) => (
-            <a
+            <button
               key={l.href + l.label}
-              href={l.href}
-              className="py-3 border-line border-b font-tight font-semibold text-[clamp(34px,9vw,52px)] tracking-[-0.045em]"
-              onClick={() => setMenuOpen(false)}
+              type="button"
+              className="py-3 border-line border-b font-tight font-semibold text-[clamp(34px,9vw,52px)] tracking-[-0.045em] text-left"
+              onClick={onSectionButtonClick(l.href)}
             >
               {l.label}
-            </a>
+            </button>
           ))}
           <a
             href={profile.cvPath}
@@ -375,15 +416,20 @@ function App() {
                   {profile.heroTagline}
                 </p>
                 <div className="flex max-sm:flex-wrap flex-nowrap gap-3">
-                  <a href="#work" className={`${BTN} px-6.5 py-2.75 shrink-0`}>
+                  <button
+                    type="button"
+                    onClick={onSectionButtonClick('#work')}
+                    className={`${BTN} px-6.5 py-2.75 shrink-0`}
+                  >
                     View my work <ArrowR />
-                  </a>
-                  <a
-                    href="#contact"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onSectionButtonClick('#contact')}
                     className="inline-flex items-center gap-2 px-6.5 py-2.75 border border-edge hover:border-ink font-medium text-[14px] transition-colors duration-300"
                   >
                     Contact me <ArrowR />
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -800,32 +846,46 @@ function App() {
               <div>
                 <h3 className={`${LABEL2} mb-3.5`}>Menu</h3>
                 {content.navLinks.map((l) => (
-                  <a key={l.href + l.label} href={l.href} className={FOOT_LINK}>
+                  <button
+                    key={l.href + l.label}
+                    type="button"
+                    onClick={onSectionButtonClick(l.href)}
+                    className={`${FOOT_LINK} text-left`}
+                  >
                     {l.label}
-                  </a>
+                  </button>
                 ))}
               </div>
               <div>
                 <h3 className={`${LABEL2} mb-3.5`}>Resources</h3>
-                {content.footerLinks.map((l) => (
-                  <a
-                    key={l.href + l.label}
-                    href={l.href}
-                    target={
-                      l.href.startsWith('mailto:') || l.href.startsWith('#')
-                        ? undefined
-                        : '_blank'
-                    }
-                    rel={
-                      l.href.startsWith('mailto:') || l.href.startsWith('#')
-                        ? undefined
-                        : 'noopener noreferrer'
-                    }
-                    className={FOOT_LINK}
-                  >
-                    {l.label}
-                  </a>
-                ))}
+                {content.footerLinks.map((l) =>
+                  l.href.startsWith('#') ? (
+                    <button
+                      key={l.href + l.label}
+                      type="button"
+                      onClick={onSectionButtonClick(l.href)}
+                      className={`${FOOT_LINK} text-left`}
+                    >
+                      {l.label}
+                    </button>
+                  ) : (
+                    <a
+                      key={l.href + l.label}
+                      href={l.href}
+                      target={
+                        l.href.startsWith('mailto:') ? undefined : '_blank'
+                      }
+                      rel={
+                        l.href.startsWith('mailto:')
+                          ? undefined
+                          : 'noopener noreferrer'
+                      }
+                      className={FOOT_LINK}
+                    >
+                      {l.label}
+                    </a>
+                  ),
+                )}
               </div>
             </div>
           </div>
