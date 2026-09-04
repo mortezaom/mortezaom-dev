@@ -2,8 +2,10 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getPublicContent, getSeedContent } from '../lib/content';
 
-// Only an empty/missing DB falls back; anything else rethrows.
-const EMPTY_DB = /empty|no such table|no such file|ENOENT|does not exist/i;
+// Only an empty/missing DB (or an unloadable native driver) falls back;
+// anything else rethrows.
+const EMPTY_DB =
+  /empty|no such table|no such file|ENOENT|does not exist|native binding|failed to load native/i;
 
 // Drizzle nests the real reason in `cause`; match the whole chain.
 function errorChainText(err: unknown): string {

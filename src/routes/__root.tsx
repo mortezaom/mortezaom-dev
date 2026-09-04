@@ -284,7 +284,7 @@ function RootComponent() {
           </div>
         </Suspense>
         <Scripts />
-        {!isAdmin && tracking.snippet && (
+        {!isAdmin && tracking?.snippet && (
           <TrackingSnippet snippet={tracking.snippet} />
         )}
       </body>

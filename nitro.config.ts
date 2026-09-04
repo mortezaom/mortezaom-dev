@@ -13,6 +13,10 @@ const SECURITY_HEADERS = {
 };
 
 export default defineNitroConfig({
+  // Native NAPI driver: bundling it breaks the relative .node require, so
+  // the .output server 500s ("Cannot find native binding"). Trace keeps it
+  // external and ships the binding into .output (login 500 fix).
+  traceDeps: ['drizzle-orm', '@tursodatabase/database'],
   routeRules: {
     '/': {
       prerender: true,
