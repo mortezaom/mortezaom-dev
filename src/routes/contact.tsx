@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowUR } from '../components/icons';
 import { submitContactFn } from '../server/contact';
 import { getContentFn } from '../server/content';
+import { initPointerEffects } from '../lib/pointer-effects';
 
 export const Route = createFileRoute('/contact')({
   loader: () => getContentFn().catch(() => null),
@@ -77,6 +78,8 @@ function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuEl = useRef<HTMLDivElement>(null);
+
+  useEffect(() => initPointerEffects(), []);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
@@ -246,7 +249,7 @@ function ContactPage() {
         {/* Center piece from the mock: form left, info right. Site tokens only. */}
         <section
           aria-label="Contact"
-          className="grid grid-cols-2 max-[900px]:grid-cols-1 bg-surface border border-line min-h-140 overflow-hidden"
+          className="grid min-h-[560px] grid-cols-2 overflow-hidden border border-line bg-surface max-[900px]:grid-cols-1"
         >
           <div className="flex justify-center items-center px-[clamp(28px,6vw,80px)] py-16">
             {status === 'sent' ? (
@@ -481,6 +484,11 @@ function ContactPage() {
           <span>© {new Date().getFullYear()}</span>
         </div>
       </footer>
+
+      <div aria-hidden="true" className="site-cursor">
+        <span className="cursor-default" aria-hidden="true" />
+        <span className="cursor-interactive" aria-hidden="true" />
+      </div>
     </>
   );
 }
