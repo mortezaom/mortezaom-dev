@@ -1,4 +1,4 @@
-// Admin server fns: env-single-admin auth + per-page slice saves + JSON import/export.
+// Admin server fns: auth + per-page saves + JSON import/export.
 import { mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -20,6 +20,7 @@ import {
   assertEmail,
   assertSafeHref,
   assertSiteUrl,
+  assertTrackingSnippet,
   bumpVersion,
   exportSeedObject,
   importValidated,
@@ -45,11 +46,7 @@ function requireAdmin(): string {
   return user;
 }
 
-/**
- * CSRF guard for state-changing fns: cookies alone are not enough.
- * SameSite=lax blocks most cross-site POSTs; this rejects the rest.
- * Skips when neither header is present (non-browser callers).
- */
+/** CSRF guard: rejects cross-site POSTs SameSite=lax misses. */
 function assertSameOrigin(): void {
   const origin = getRequestHeader('origin');
   const referer = getRequestHeader('referer');
@@ -65,13 +62,13 @@ function assertSameOrigin(): void {
   if (url.host !== host) throw new Error('FORBIDDEN');
 }
 
-/** Auth + CSRF for POST mutations. */
+/** Auth + CSRF for mutations. */
 function requireAdminPost(): string {
   assertSameOrigin();
   return requireAdmin();
 }
 
-/** Pass-through validator: inputs are plain JSON, validated inside handlers. */
+/** Plain-JSON inputs; handlers validate. */
 const json =
   <T>() =>
   (d: unknown) =>
@@ -84,9 +81,7 @@ interface LoginInput {
 
 /* ---------- session ---------- */
 
-// IP+username keyed, bounded, self-expiring. Per-process: correct for a
-// single Node instance behind trusted networking; use Redis/DB when
-// scaling horizontally.
+// Per-process IP+username buckets; use Redis/DB past one instance.
 const MAX_ATTEMPTS = 1000;
 const LOCK_AFTER = 5;
 const LOCK_MS = 15 * 60 * 1000;
@@ -102,7 +97,6 @@ function rateLimited(key: string, now: number): boolean {
   const rec = attempts.get(key);
   if (!rec) return false;
   if (rec.until && now >= rec.until) {
-    // Lockout expired — decay instead of locking forever.
     attempts.delete(key);
     return false;
   }
@@ -117,7 +111,6 @@ function rateFail(key: string, now: number): void {
     until: fails >= LOCK_AFTER ? now + LOCK_MS : 0,
   });
   if (attempts.size > MAX_ATTEMPTS) {
-    // Evict an expired entry first, else the oldest.
     let evicted = false;
     for (const [k, v] of attempts) {
       if (v.until && now >= v.until) {
@@ -220,7 +213,7 @@ const section = (v: unknown, what: string) => {
   };
 };
 
-/** Log SEO write failures instead of swallowing them silently. */
+/** SEO writes log instead of failing the save. */
 async function refreshSeo(siteUrl: string): Promise<void> {
   try {
     await writeSeoFiles(siteUrl);
@@ -248,6 +241,7 @@ export const saveSiteFn = createServerFn({ method: 'POST' })
       author: req(s.author, 'site.author'),
       twitterCreator: req(s.twitterCreator, 'site.twitterCreator'),
       themeColor: req(s.themeColor, 'site.themeColor', 100),
+      trackingSnippet: assertTrackingSnippet(s.trackingSnippet),
     };
     const nav = links(data.navLinks, 'navLinks');
     const quick = links(data.quickLinks, 'quickLinks');
@@ -471,7 +465,7 @@ export const importJsonFn = createServerFn({ method: 'POST' })
     }
     const validated = validateSeed(parsed);
     if (data.dryRun) return { ok: true as const, counts: validated.counts };
-    // Backup current content before the destructive replace-all.
+    // Back up before the destructive replace-all.
     const stamp = Date.now();
     let backup = '';
     try {
@@ -483,10 +477,10 @@ export const importJsonFn = createServerFn({ method: 'POST' })
         await mkdir(dirname(getDbFile()), { recursive: true });
         await writeFile(join(dirname(getDbFile()), name), `${current}\n`);
       } catch {
-        // Tmpdir copy above is the guaranteed one.
+        // Tmp copy above suffices.
       }
     } catch (err) {
-      // Empty DB on first import: nothing to back up.
+      // First import: nothing to back up.
       console.error(
         `Pre-import backup skipped: ${err instanceof Error ? err.message : err}`,
       );

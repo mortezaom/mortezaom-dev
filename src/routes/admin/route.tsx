@@ -13,9 +13,7 @@ import { ThemeProvider, useTheme } from '@/components/theme-provider';
 import { logoutFn, sessionFn } from '../../server/admin';
 
 export const Route = createFileRoute('/admin')({
-  // No SEO value here (noindex, no-store): run auth + loaders on the
-  // server but skip server-rendering the component. SSR HTML carries the
-  // pending skeleton; the client renders AdminLayout after hydration.
+  // Noindex: skip SSR HTML, client renders after hydration.
   ssr: 'data-only',
   beforeLoad: async ({ location }) => {
     const s = await sessionFn().catch(() => ({ user: null }));

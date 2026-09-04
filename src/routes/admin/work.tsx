@@ -306,7 +306,7 @@ function WorkPage() {
       list.map((p, j) => (j === index ? { ...p, [field]: value } : p)),
     );
   };
-  // Swap with the previous/next project of the same kind (order within tab).
+  // Reorder within the same kind tab.
   const moveInTab = (index: number, dir: -1 | 1) => {
     setProjects((list) => {
       const kind = list[index]?.kind;

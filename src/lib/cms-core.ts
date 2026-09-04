@@ -1,5 +1,4 @@
-// Shared CMS core: validation + import/export used by both the CLI and admin panel.
-// Server-only (imports the Turso client).
+// Shared CMS validation + import/export (CLI + admin). Server-only.
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -57,10 +56,7 @@ const req = (v: unknown, what: string, max = MAX_TEXT): string => {
   return v;
 };
 
-/**
- * Link href allowlist: relative paths/anchors, http(s), mailto.
- * Blocks `javascript:`, `data:`, `vbscript:` etc. (stored XSS via href).
- */
+/** Href allowlist: relative/anchor/http(s)/mailto. Blocks stored XSS vectors. */
 export function assertSafeHref(href: string, what: string): string {
   if (href.length > MAX_URL)
     throw new Error(`Invalid content: ${what} exceeds ${MAX_URL} chars`);
@@ -82,7 +78,24 @@ export function assertSafeHref(href: string, what: string): string {
 const safeLink = (v: unknown, what: string): string =>
   assertSafeHref(req(v, what, MAX_URL), what);
 
-/** Minimal email sanity (admin-entered contact address). */
+const MAX_SNIPPET = 5000;
+
+/** Optional raw tracking tag. Empty/missing disables tracking. */
+export function assertTrackingSnippet(
+  v: unknown,
+  what = 'site.trackingSnippet',
+): string | null {
+  if (v == null || v === '') return null;
+  if (typeof v !== 'string')
+    throw new Error(`Invalid content: ${what} must be a string`);
+  if (v.length > MAX_SNIPPET)
+    throw new Error(`Invalid content: ${what} exceeds ${MAX_SNIPPET} chars`);
+  if (!/<script[\s>]/i.test(v))
+    throw new Error(`Invalid content: ${what} must contain a <script> tag`);
+  return v;
+}
+
+/** Minimal email sanity check. */
 export function assertEmail(raw: unknown, what: string): string {
   const v = req(raw, what, 320);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))
@@ -90,7 +103,7 @@ export function assertEmail(raw: unknown, what: string): string {
   return v;
 }
 
-/** Site URL must be an absolute http(s) URL (used in SEO files + meta). */
+/** Site URL must be absolute http(s). */
 export function assertSiteUrl(raw: unknown, what = 'site.siteUrl'): string {
   const v = req(raw, what, MAX_URL);
   let u: URL;
@@ -188,6 +201,7 @@ export function validateSeed(input: unknown): ValidatedSeed {
       author: req(site.author, 'site.author'),
       twitterCreator: req(site.twitterCreator, 'site.twitterCreator'),
       themeColor: req(site.themeColor, 'site.themeColor', 100),
+      trackingSnippet: assertTrackingSnippet(site.trackingSnippet),
     },
     profileRow: {
       id: 1,
@@ -384,6 +398,7 @@ export async function exportSeedObject() {
       author: s.author,
       twitterCreator: s.twitterCreator,
       themeColor: s.themeColor,
+      trackingSnippet: s.trackingSnippet ?? null,
     },
     profile: {
       email: p.email,
@@ -440,14 +455,10 @@ export async function exportSeedObject() {
   };
 }
 
-/**
- * Regenerate public/sitemap.xml + public/robots.txt from the site URL.
- * Throws on invalid URL or write failure — callers decide logging/fallback.
- */
+/** Regenerate sitemap.xml + robots.txt. Throws; callers handle logging. */
 export async function writeSeoFiles(siteUrl: string) {
   const clean = assertSiteUrl(siteUrl);
-  // Server runs with cwd = project root (`node .output/server/index.mjs`),
-  // but resolve defensively for other launchers.
+  // Cwd is usually the project root; probe defensively.
   const { existsSync } = await import('node:fs');
   const candidates = [
     resolve(process.cwd(), 'public'),
@@ -463,7 +474,7 @@ export async function writeSeoFiles(siteUrl: string) {
   await writeFile(resolve(dir, 'robots.txt'), robots);
 }
 
-/** 2-space JSON, short arrays/objects on one line (matches tracked seed). */
+/** 2-space JSON with short arrays/objects collapsed. */
 export function stringifySeed(value: unknown): string {
   let pretty = JSON.stringify(value, null, 2);
   pretty = pretty.replace(

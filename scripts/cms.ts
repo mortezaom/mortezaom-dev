@@ -83,7 +83,7 @@ async function main() {
   }
 }
 
-/** Read a line from stdin (used for passwords; avoids history/ps leaks). */
+/** Hidden stdin prompt (passwords skip history/ps). */
 function promptHidden(prompt: string): Promise<string> {
   return new Promise((done) => {
     const { stdin, stdout } = process;

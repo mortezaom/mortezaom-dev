@@ -13,6 +13,7 @@ export interface SiteContent {
   author: string;
   twitterCreator: string;
   themeColor: string;
+  trackingSnippet: string | null;
 }
 
 export interface ProfileContent {
@@ -197,6 +198,7 @@ export async function getPublicContent(): Promise<PublicContent> {
       author: site.author,
       twitterCreator: site.twitterCreator,
       themeColor: site.themeColor,
+      trackingSnippet: site.trackingSnippet ?? null,
     },
     profile: {
       email: profile.email,
@@ -241,12 +243,11 @@ export function invalidateContentCache() {
   cache = undefined;
 }
 
-/** Build-time fallback: read the tracked JSON when the DB file is absent. */
+/** Fallback: tracked JSON when the DB file is absent. */
 export async function getSeedContent(): Promise<
   Omit<PublicContent, 'version'>
 > {
-  // Built output (`.output/server`) ships without `content/` next to the
-  // source tree, so probe the project root plus the bundle location.
+  // `.output/server` ships without `content/`; probe upward too.
   const candidates = [resolve(process.cwd(), 'content/portfolio.json')];
   try {
     const here = dirname(fileURLToPath(import.meta.url));
@@ -257,7 +258,7 @@ export async function getSeedContent(): Promise<
       dir = parent === dir ? undefined : parent;
     }
   } catch {
-    // Fall through to cwd candidate.
+    // Cwd candidate below still applies.
   }
   let raw: string | undefined;
   let lastErr: unknown;
@@ -276,8 +277,7 @@ export async function getSeedContent(): Promise<
   const json = JSON.parse(raw) as Record<string, unknown>;
   const withIds = <T>(rows: T[]): (T & { id: number; sortOrder: number })[] =>
     (Array.isArray(rows) ? rows : []).map((r, i) => ({
-      // Seed wins for content fields, but ids stay generated so a crafted
-      // seed cannot inject arbitrary row ids.
+      // Ids stay generated so a crafted seed can't inject row ids.
       ...(r as T),
       id: i + 1,
       sortOrder: i,
@@ -296,7 +296,7 @@ export async function getSeedContent(): Promise<
     skillGroups: Omit<SkillGroupItem, 'id' | 'sortOrder'>[];
   };
   return {
-    site: seed.site,
+    site: { trackingSnippet: null, ...seed.site },
     profile: seed.profile,
     sections: Object.fromEntries((seed.sections ?? []).map((s) => [s.key, s])),
     navLinks: withIds(seed.navLinks ?? []),

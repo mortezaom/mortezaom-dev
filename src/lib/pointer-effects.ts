@@ -1,13 +1,4 @@
-/**
- * Single global pointer tracker for the custom cursor + halo system.
- *
- * Continuous path:
- *   pointermove -> store latest pointer data -> requestAnimationFrame
- *     -> cursor transform + halo transform
- *
- * No React state is touched by pointer movement. All continuous updates are
- * compositor-friendly `transform` writes (plus class toggles on state change).
- */
+/** Global pointer tracker for cursor + halo. Transform writes only, no React state. */
 
 const INTERACTIVE_SELECTOR =
   'a, button, input, select, textarea, summary, [role="button"], [data-cursor="interactive"]';
@@ -15,9 +6,8 @@ const HALO_SELECTOR = '.halo-target';
 const FINE_POINTER_QUERY = '(hover: hover) and (pointer: fine)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
-// Half of the 18px cursor box. Keep in sync with `.site-cursor` dimensions.
+// Keep in sync with `.site-cursor` (18px) and the halo gradient (360px).
 const CURSOR_OFFSET = 9;
-// Matches the halo gradient radius in CSS (`circle 360px`).
 const HALO_RADIUS = 360;
 
 export function initPointerEffects(): () => void {
@@ -30,8 +20,7 @@ export function initPointerEffects(): () => void {
 
   const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY);
   const cursor = document.querySelector<HTMLElement>('.site-cursor');
-  // Halo works through CSS `:hover` opacity; without a cursor element there
-  // is nothing for this module to drive.
+  // No cursor element, nothing to drive.
   if (!cursor) return () => {};
 
   const html = document.documentElement;
@@ -47,9 +36,8 @@ export function initPointerEffects(): () => void {
   let haloRect: DOMRect | null = null;
   let haloLayer: HTMLElement | null = null;
 
-  // The intro overlay owns the screen until it exits; `cursor: none` must
-  // not apply underneath it. Tracked as a boolean so the per-frame path
-  // never queries the DOM for this.
+  // `cursor: none` must not apply under the intro overlay. Boolean so the
+  // per-frame path never touches the DOM.
   let introBlocked =
     document.querySelector('.intro-loader:not(.is-exiting)') !== null;
 
@@ -63,7 +51,6 @@ export function initPointerEffects(): () => void {
 
   const setVisible = (visible: boolean) => {
     if (isVisible === visible) {
-      // Intro may have finished while visible; ensure the class can apply.
       if (visible) syncCursorActiveClass();
       return;
     }
@@ -83,7 +70,6 @@ export function initPointerEffects(): () => void {
     raf = 0;
     if (!hasPointer) return;
 
-    // Cursor: single compositor-driven transform write.
     cursor.style.transform = `translate3d(${lastX - CURSOR_OFFSET}px, ${lastY - CURSOR_OFFSET}px, 0)`;
     if (!isVisible) setVisible(true);
     else syncCursorActiveClass();
@@ -94,7 +80,6 @@ export function initPointerEffects(): () => void {
       cursor.classList.toggle('is-interactive', interactive);
     }
 
-    // Reduced motion: no halo movement.
     if (reducedMotion.matches) return;
 
     const nextHalo =
@@ -105,7 +90,7 @@ export function initPointerEffects(): () => void {
       haloRect = null;
       haloLayer = null;
       if (activeHalo) {
-        // One layout read per target switch; reused while inside the target.
+        // One layout read per target switch.
         haloRect = activeHalo.getBoundingClientRect();
         haloLayer =
           activeHalo.querySelector<HTMLElement>(
@@ -113,7 +98,7 @@ export function initPointerEffects(): () => void {
           ) ?? null;
       }
     } else if (activeHalo && !haloRect) {
-      // Rect was invalidated by scroll/resize while staying in the target.
+      // Invalidated by scroll/resize.
       haloRect = activeHalo.getBoundingClientRect();
     }
 
@@ -127,8 +112,7 @@ export function initPointerEffects(): () => void {
     if (haloLayer) {
       haloLayer.style.transform = `translate3d(${haloX}px, ${haloY}px, 0)`;
     } else {
-      // Drives the `::before` halo layer via `transform` only, so the
-      // gradient itself is never regenerated per pointer position.
+      // Transform only; the gradient is never regenerated.
       activeHalo.style.setProperty('--halo-x', `${haloX}px`);
       activeHalo.style.setProperty('--halo-y', `${haloY}px`);
     }
@@ -158,14 +142,12 @@ export function initPointerEffects(): () => void {
 
   const onInvalidateHaloRect = () => {
     haloRect = null;
-    // Re-render lazily on next pointer move; if the pointer is parked over
-    // a halo target during a scroll, refresh its position once.
+    // Refresh once if parked over a halo target during scroll.
     if (activeHalo && hasPointer) schedule();
   };
 
   const onReducedMotionChange = () => {
-    // CSS handles transition removal; drop cached halo state so no stale
-    // transform persists when toggling the preference mid-session.
+    // Drop stale transforms when the preference flips mid-session.
     if (reducedMotion.matches) {
       haloRect = null;
     }
@@ -182,8 +164,7 @@ export function initPointerEffects(): () => void {
   window.addEventListener('resize', onInvalidateHaloRect);
   reducedMotion.addEventListener?.('change', onReducedMotionChange);
 
-  // Watches only for the intro overlay exiting/unmounting, then
-  // disconnects so there is zero steady-state cost.
+  // Disconnects once the intro unmounts: zero steady-state cost.
   const introObserver = new MutationObserver(() => {
     introBlocked =
       document.querySelector('.intro-loader:not(.is-exiting)') !== null;

@@ -80,7 +80,7 @@ function SitePage() {
 
   const doImportCheck = async () => {
     setImportMsg('');
-    // Dry-run first so malformed JSON never touches the DB.
+    // Dry-run first; malformed JSON never touches the DB.
     try {
       await importJsonFn({ data: { json: importText, dryRun: true } });
     } catch (err) {
@@ -204,6 +204,21 @@ function SitePage() {
                 <Input
                   value={site.themeColor}
                   onChange={(e) => patchSite('themeColor', e.target.value)}
+                />
+              </Field>
+            </div>
+            <div className="mt-4">
+              <Field
+                label="Tracking snippet (optional)"
+                hint="Raw analytics tag (Umami, Plausible, GA…). Public pages only; empty disables. External script hosts must be allowlisted in the nitro.config.ts CSP. Paste only from providers you trust."
+              >
+                <Textarea
+                  className="font-mono"
+                  rows={4}
+                  spellCheck={false}
+                  placeholder='<script defer src="https://…/script.js" data-website-id="…"></script>'
+                  value={site.trackingSnippet ?? ''}
+                  onChange={(e) => patchSite('trackingSnippet', e.target.value)}
                 />
               </Field>
             </div>

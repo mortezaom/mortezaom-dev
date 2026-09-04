@@ -74,8 +74,6 @@
 
   --font-sans: 'Elms Sans', system-ui, sans-serif;
   --font-tight: 'Syne', sans-serif;
-  /*--font-sans: 'Syne', system-ui, sans-serif;
-  --font-tight: 'Elms Sans', sans-serif;*/
 
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -145,7 +143,7 @@
     outline-color: var(--c-bg);
     outline-offset: -6px;
   }
-  /* Admin-only surface: keep public styling untouched (1:1). */
+  /* Admin-only surface; public styling untouched. */
   .admin-shadcn {
     @apply bg-background text-foreground;
     --font-sans: 'Outfit Variable', system-ui, sans-serif;
@@ -254,10 +252,7 @@
     overflow: hidden;
   }
 
-  /* Movable halo layer: a pre-rendered radial blob positioned with
-     `transform` only. JS writes `--halo-x`/`--halo-y` (pseudo-element) or
-     sets `transform` directly (`.halo-light` child); the gradient itself is
-     never regenerated per pointer position. */
+  /* Pre-rendered halo blob, positioned via transform only. */
   .project-card::before,
   .halo-cell::before {
     position: absolute;
@@ -576,7 +571,7 @@ html:has(.intro-loader)::-webkit-scrollbar-thumb {
   }
 }
 
-/* No JS: never trap the page behind the loader overlay. */
+/* No-JS fallback: never trap the page behind the loader. */
 html:not(.js) .intro-loader {
   display: none;
 }

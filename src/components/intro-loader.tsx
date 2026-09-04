@@ -33,8 +33,7 @@ export function IntroLoader(props: {
   const [revealed, setRevealed] = useState(0);
   const [exiting, setExiting] = useState(false);
   const propsRef = useRef(props);
-  // Latest-ref pattern: timeouts scheduled in the mount effect below always
-  // call the newest callbacks without re-subscribing.
+  // Latest-ref: mount-effect timeouts always call the newest callbacks.
   useEffect(() => {
     propsRef.current = props;
   });

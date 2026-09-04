@@ -26,7 +26,7 @@ export const Route = createFileRoute('/')({
   staleTime: 5 * 60 * 1000,
   gcTime: 30 * 60 * 1000,
   headers: () => ({
-    // Keep in sync with nitro.config.ts ISR window.
+    // Mirrors the nitro.config.ts ISR window.
     'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=600',
   }),
   head: ({ loaderData }) => {

@@ -6,19 +6,17 @@ const SECURITY_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-  // Narrow CSP: same-origin + fonts + inline styles/scripts used by the app.
-  // Adjust if new third-party embeds are added.
+  // Same-origin + fonts + inline styles/scripts. Extend for new embeds.
+  // Dashboard tracking snippets with external hosts need allowlisting here.
   'Content-Security-Policy':
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://umami.mortezaom.dev; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://umami.mortezaom.dev; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
 };
 
 export default defineNitroConfig({
   routeRules: {
     '/': {
       prerender: true,
-      // Short ISR window so admin saves go public fast. Every content
-      // mutation bumps `content_version`, which busts the client loader
-      // cache; this HTML window is the remaining staleness bound.
+      // Short ISR so admin saves go public fast (`content_version` busts the loader cache).
       isr: 60,
       headers: {
         'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=600',

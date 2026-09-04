@@ -1,13 +1,11 @@
-// Public content server fn: DB first, tracked JSON fallback (build/prerender safety).
+// DB first, tracked JSON fallback for build/prerender.
 import { createServerFn } from '@tanstack/react-start';
 import { getPublicContent, getSeedContent } from '../lib/content';
 
-// Only an empty/missing DB falls back to the tracked seed. Anything else
-// is a real failure: log it and rethrow instead of masking it.
+// Only an empty/missing DB falls back; anything else rethrows.
 const EMPTY_DB = /empty|no such table|no such file|ENOENT|does not exist/i;
 
-// Drizzle wraps driver errors ("Failed query: ...", real reason in `cause`),
-// so match against the whole chain, not just the top-level message.
+// Drizzle nests the real reason in `cause`; match the whole chain.
 function errorChainText(err: unknown): string {
   const parts: string[] = [];
   let cur: unknown = err;
@@ -32,5 +30,17 @@ export const getContentFn = createServerFn({ method: 'GET' }).handler(
       const seed = await getSeedContent();
       return { version: 0, ...seed };
     }
+  },
+);
+
+// Tracking snippet for public pages. Never throws: null disables tracking.
+export const getTrackingSnippetFn = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<{ snippet: string | null }> => {
+    const snippet = await getPublicContent()
+      .then((c) => c.site.trackingSnippet)
+      .catch(() => null);
+    if (snippet) return { snippet };
+    const seed = await getSeedContent().catch(() => null);
+    return { snippet: seed?.site.trackingSnippet ?? null };
   },
 );

@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-/** Single-row site identity + SEO table (id always 1). */
+/** Single-row site identity + SEO (id always 1). */
 export const site = sqliteTable('site', {
   id: integer('id').primaryKey(),
   siteUrl: text('site_url').notNull(),
@@ -11,9 +11,10 @@ export const site = sqliteTable('site', {
   author: text('author').notNull(),
   twitterCreator: text('twitter_creator').notNull(),
   themeColor: text('theme_color').notNull(),
+  trackingSnippet: text('tracking_snippet'),
 });
 
-/** Single-row hero/about/contact copy (id always 1). JSON columns hold arrays. */
+/** Single-row hero/about/contact copy (id always 1). */
 export const profile = sqliteTable('profile', {
   id: integer('id').primaryKey(),
   email: text('email').notNull(),
@@ -29,7 +30,7 @@ export const profile = sqliteTable('profile', {
   contactCopy: text('contact_copy').notNull(),
 });
 
-/** Editable section headers, keyed by section (about, workSpotlight, ...). */
+/** Editable section headers, keyed by section. */
 export const sections = sqliteTable('sections', {
   key: text('key').primaryKey(),
   eyebrow: text('eyebrow'),
@@ -73,7 +74,7 @@ export const stats = sqliteTable('stats', {
   sortOrder: integer('sort_order').notNull().default(0),
 });
 
-/** All project types in one table; kind = spotlight | engineering | archive. */
+/** All projects in one table (kind = spotlight | engineering | archive). */
 export const projects = sqliteTable('projects', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   kind: text('kind').notNull(),
@@ -107,7 +108,7 @@ export const skillGroups = sqliteTable('skill_groups', {
   sortOrder: integer('sort_order').notNull().default(0),
 });
 
-/** Cache-buster: bumped on every content mutation. */
+/** Cache-buster, bumped on every mutation. */
 export const contentMeta = sqliteTable('content_meta', {
   key: text('key').primaryKey(),
   value: text('value').notNull(),
