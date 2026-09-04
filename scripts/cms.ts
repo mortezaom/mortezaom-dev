@@ -100,6 +100,16 @@ function promptHidden(prompt: string): Promise<string> {
 }
 
 main().catch((err) => {
-  console.error(err instanceof Error ? err.message : err);
+  if (err instanceof Error) {
+    console.error(err.message);
+    // Drizzle wraps the real SQLite failure in `cause`; print the chain.
+    let cause: unknown = (err as { cause?: unknown }).cause;
+    while (cause instanceof Error) {
+      console.error(`caused by: ${cause.message}`);
+      cause = (cause as { cause?: unknown }).cause;
+    }
+  } else {
+    console.error(err);
+  }
   process.exit(1);
 });
