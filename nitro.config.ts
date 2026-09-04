@@ -19,11 +19,12 @@ export default defineNitroConfig({
   traceDeps: ['drizzle-orm', '@tursodatabase/database'],
   routeRules: {
     '/': {
-      prerender: true,
-      // Short ISR so admin saves go public fast (`content_version` busts the loader cache).
-      isr: 60,
+      // Dynamic SSR + SWR: prerender would freeze admin content, and `isr`
+      // is Vercel/Netlify-only.
+      swr: 60,
       headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=600',
+        'Cache-Control':
+          'public, max-age=60, s-maxage=60, stale-while-revalidate=600',
         'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
         ...SECURITY_HEADERS,
       },

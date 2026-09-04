@@ -154,16 +154,14 @@ function scheduleSectionScroll(id: string) {
   }, 80);
 }
 
-/**
- * Runs the admin-pasted tracking tag. Scripts recreated via createElement:
- * tags placed through innerHTML never execute.
- */
+/** Admin tracking tag: SSR emits markup; updates reinject via createElement (innerHTML scripts never run). data-snippet skips double-run. */
 function TrackingSnippet({ snippet }: { snippet: string }) {
   const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
+    if (host.dataset.snippet === snippet) return;
     host.innerHTML = '';
     const tpl = document.createElement('template');
     tpl.innerHTML = snippet;
@@ -175,9 +173,17 @@ function TrackingSnippet({ snippet }: { snippet: string }) {
       node.replaceWith(el);
     }
     host.append(tpl.content);
+    host.dataset.snippet = snippet;
   }, [snippet]);
 
-  return <div ref={hostRef} aria-hidden="true" />;
+  return (
+    <div
+      ref={hostRef}
+      data-snippet={snippet}
+      aria-hidden="true"
+      dangerouslySetInnerHTML={{ __html: snippet }}
+    />
+  );
 }
 
 function RootComponent() {
