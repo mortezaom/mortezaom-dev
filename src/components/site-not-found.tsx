@@ -8,7 +8,7 @@ const LABEL = 'text-[11px] uppercase tracking-[.16em] text-dim2 font-semibold';
 
 export function SiteNotFound() {
   return (
-    <div className="relative flex h-dvh flex-col overflow-hidden select-none">
+    <div className="relative flex flex-col h-dvh overflow-hidden select-none">
       <header className="z-10 bg-bg/85 backdrop-blur-md border-line border-b">
         <div className={`${WRAP} flex items-center justify-between h-17`}>
           <Link
@@ -52,7 +52,7 @@ export function SiteNotFound() {
       </main>
 
       <div
-        className="absolute inset-x-0 bottom-0 overflow-hidden select-none pointer-events-none"
+        className="bottom-0 absolute inset-x-0 overflow-hidden pointer-events-none select-none"
         aria-hidden="true"
       >
         <p className="font-tight font-semibold text-[24vw] text-ghost text-center leading-[.78] tracking-[-0.055em] whitespace-nowrap translate-y-[.18em]">

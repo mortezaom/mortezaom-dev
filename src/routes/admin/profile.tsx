@@ -62,10 +62,10 @@ function ProfilePage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[22px] font-semibold tracking-[-0.03em]">
+        <h1 className="font-semibold text-[22px] tracking-[-0.03em]">
           Profile
         </h1>
-        <p className="text-xs leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground text-xs leading-relaxed">
           Hero, about, contact, stats.
         </p>
       </div>
@@ -75,7 +75,7 @@ function ProfilePage() {
           <CardTitle>Hero</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <div className="gap-4 grid">
             <Field label="Name lines (one per line)" hint="Big display name.">
               <Textarea
                 rows={3}
@@ -83,7 +83,7 @@ function ProfilePage() {
                 onChange={(e) => setHeroName(e.target.value.split('\n'))}
               />
             </Field>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="gap-4 grid sm:grid-cols-2">
               <Field label="Role">
                 <Input
                   value={profile.heroRole}
@@ -103,7 +103,7 @@ function ProfilePage() {
                 onChange={(e) => patchProfile('heroTagline', e.target.value)}
               />
             </Field>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="gap-4 grid sm:grid-cols-2">
               <Field label="Hero card title">
                 <Input
                   value={profile.heroCardTitle}
@@ -137,7 +137,7 @@ function ProfilePage() {
           <CardTitle>About</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <div className="gap-4 grid">
             <Field label="Section title">
               <Input
                 value={about.title}
@@ -211,7 +211,7 @@ function ProfilePage() {
                   }
                 />
                 <Input
-                  className="flex-[2]"
+                  className="flex-2"
                   placeholder="Label"
                   aria-label="Label"
                   value={s.label}
@@ -293,7 +293,7 @@ function ProfilePage() {
           <CardTitle>Contact (footer)</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <div className="gap-4 grid">
             <Field label="Heading">
               <Input
                 value={profile.contactHeading}

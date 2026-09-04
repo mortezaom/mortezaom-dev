@@ -31,6 +31,7 @@
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit",
+    "source.fixAll.tailwindcss": "explicit",
     "source.format.oxc": "explicit"
   }
 }

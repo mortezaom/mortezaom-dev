@@ -142,17 +142,17 @@ function SitePage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[22px] font-semibold tracking-[-0.03em]">
+        <h1 className="font-semibold text-[22px] tracking-[-0.03em]">
           Site & SEO
         </h1>
-        <p className="text-xs leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground text-xs leading-relaxed">
           Identity, meta tags, links. Saving revalidates the public page.
         </p>
       </div>
 
       <Card>
         <CardContent className="pt-6">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="gap-4 grid sm:grid-cols-2">
             <Field label="Site URL">
               <Input
                 value={site.siteUrl}
@@ -166,7 +166,7 @@ function SitePage() {
               />
             </Field>
           </div>
-          <div className="mt-4 grid gap-4">
+          <div className="gap-4 grid mt-4">
             <Field label="Title">
               <Input
                 value={site.title}
@@ -187,7 +187,7 @@ function SitePage() {
                 onChange={(e) => patchSite('socialDescription', e.target.value)}
               />
             </Field>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="gap-4 grid sm:grid-cols-3">
               <Field label="Author">
                 <Input
                   value={site.author}

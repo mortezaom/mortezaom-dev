@@ -72,8 +72,8 @@ function CareerPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[22px] font-semibold tracking-[-0.03em]">Career</h1>
-        <p className="text-xs leading-relaxed text-muted-foreground">
+        <h1 className="font-semibold text-[22px] tracking-[-0.03em]">Career</h1>
+        <p className="text-muted-foreground text-xs leading-relaxed">
           Experience timeline + skill groups.
         </p>
       </div>
@@ -83,7 +83,7 @@ function CareerPage() {
           <CardTitle>Experience header</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <div className="gap-4 grid">
             <Field label="Title">
               <Input
                 value={expSec.title}
@@ -109,9 +109,9 @@ function CareerPage() {
         {exp.map((e, i) => (
           <Card key={i}>
             <CardContent className="pt-6">
-              <div className="mb-4 flex items-center justify-between gap-2">
+              <div className="flex justify-between items-center gap-2 mb-4">
                 <Input
-                  className="border-0 px-0 text-[16px] font-semibold shadow-none focus-visible:ring-0"
+                  className="shadow-none px-0 border-0 focus-visible:ring-0 font-semibold text-[16px]"
                   placeholder="Role"
                   aria-label="Role"
                   value={e.role}
@@ -171,8 +171,8 @@ function CareerPage() {
                   </Button>
                 </div>
               </div>
-              <div className="grid gap-3">
-                <div className="grid gap-3 sm:grid-cols-3">
+              <div className="gap-3 grid">
+                <div className="gap-3 grid sm:grid-cols-3">
                   <Field label="Company">
                     <Input
                       value={e.company}
@@ -287,13 +287,13 @@ function CareerPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="gap-4 grid sm:grid-cols-2">
         {groups.map((g, i) => (
           <Card key={i}>
             <CardContent className="pt-6">
-              <div className="mb-3 flex items-center justify-between gap-2">
+              <div className="flex justify-between items-center gap-2 mb-3">
                 <Input
-                  className="border-0 px-0 text-[14px] font-semibold shadow-none focus-visible:ring-0"
+                  className="shadow-none px-0 border-0 focus-visible:ring-0 font-semibold text-[14px]"
                   placeholder="Group name"
                   aria-label="Group name"
                   value={g.name}

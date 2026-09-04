@@ -56,8 +56,8 @@ function SectionFields(props: {
         <CardTitle>{props.title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
-          <div className="grid gap-4 sm:grid-cols-2">
+        <div className="gap-4 grid">
+          <div className="gap-4 grid sm:grid-cols-2">
             <Field label="Eyebrow">
               <Input
                 value={props.value.eyebrow}
@@ -99,9 +99,9 @@ function ProjectCard(props: {
   return (
     <Card>
       <CardContent className="pt-6">
-        <div className="mb-4 flex items-center justify-between gap-2">
+        <div className="flex justify-between items-center gap-2 mb-4">
           <Input
-            className="border-0 px-0 text-[16px] font-semibold shadow-none focus-visible:ring-0"
+            className="shadow-none px-0 border-0 focus-visible:ring-0 font-semibold text-[16px]"
             placeholder="Project name"
             aria-label="Project name"
             value={p.name}
@@ -137,8 +137,8 @@ function ProjectCard(props: {
             </Button>
           </div>
         </div>
-        <div className="grid gap-3">
-          <div className="grid gap-3 sm:grid-cols-3">
+        <div className="gap-3 grid">
+          <div className="gap-3 grid sm:grid-cols-3">
             <Field label="Kind">
               <Select
                 value={p.kind}
@@ -183,7 +183,7 @@ function ProjectCard(props: {
               }
             />
           </Field>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="gap-3 grid sm:grid-cols-2">
             <Field label="Ownership (spotlight)">
               <Textarea
                 rows={2}
@@ -202,7 +202,7 @@ function ProjectCard(props: {
               />
             </Field>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="gap-3 grid sm:grid-cols-2">
             <Field label="Status (engineering)">
               <Input
                 value={p.status ?? ''}
@@ -338,8 +338,8 @@ function WorkPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[22px] font-semibold tracking-[-0.03em]">Work</h1>
-        <p className="text-xs leading-relaxed text-muted-foreground">
+        <h1 className="font-semibold text-[22px] tracking-[-0.03em]">Work</h1>
+        <p className="text-muted-foreground text-xs leading-relaxed">
           All project types live in one list; the kind tab decides where each
           appears.
         </p>
@@ -386,7 +386,7 @@ function WorkPage() {
           />
         ))}
         {visible.length === 0 && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             No {tab} projects yet.
           </p>
         )}

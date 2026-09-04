@@ -155,7 +155,7 @@ function RootComponent() {
       <head>
         <HeadContent />
       </head>
-      <body className="font-sans text-ink bg-bg antialiased [text-rendering:optimizeLegibility] selection:bg-ink selection:text-bg">
+      <body className="bg-bg selection:bg-ink font-sans text-ink selection:text-bg antialiased [text-rendering:optimizeLegibility]">
         {!isAdmin && !introComplete && (
           <IntroLoader
             onExit={() => setIntroExiting(true)}

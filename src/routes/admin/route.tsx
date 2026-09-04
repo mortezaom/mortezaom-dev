@@ -59,17 +59,17 @@ function AdminLayout() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="theme">
       <ForceDarkTheme />
-      <div className="admin-shadcn min-h-screen bg-background text-foreground">
-        <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur">
-          <div className="mx-auto flex h-16 max-w-[1100px] items-center justify-between gap-4 px-6">
+      <div className="bg-background min-h-screen text-foreground admin-shadcn">
+        <header className="top-0 z-50 sticky bg-background/90 backdrop-blur border-b">
+          <div className="flex justify-between items-center gap-4 mx-auto px-6 max-w-275 h-16">
             <Link
               to="/admin/site"
-              className="text-[17px] font-bold tracking-[-0.02em]"
+              className="font-bold text-[17px] tracking-[-0.02em]"
             >
               Admin
             </Link>
             <nav
-              className="flex gap-1 overflow-x-auto max-sm:gap-0"
+              className="flex gap-1 max-sm:gap-0 overflow-x-auto"
               aria-label="Admin sections"
             >
               {TABS.map((t) => (
@@ -77,7 +77,7 @@ function AdminLayout() {
                   key={t.to}
                   to={t.to}
                   activeProps={{ 'aria-current': 'page' }}
-                  className="px-3 py-2 text-[13px] font-medium text-muted-foreground underline-offset-4 hover:text-foreground aria-[current]:text-foreground aria-[current]:underline"
+                  className="px-3 py-2 font-medium text-[13px] text-muted-foreground aria-[current]:text-foreground hover:text-foreground aria-[current]:underline underline-offset-4"
                 >
                   {t.label}
                 </Link>
@@ -96,7 +96,7 @@ function AdminLayout() {
             </div>
           </div>
         </header>
-        <main className="mx-auto max-w-[1100px] px-6 py-8">
+        <main className="mx-auto px-6 py-8 max-w-275">
           <Suspense
             fallback={
               <p className="text-[13px] text-muted-foreground">Loading…</p>

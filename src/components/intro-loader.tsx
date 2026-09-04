@@ -152,13 +152,13 @@ export function IntroLoader(props: {
       </div>
 
       <span
-        className="intro-loader__meta intro-loader__meta--left"
+        className="intro-loader__meta--left intro-loader__meta"
         aria-hidden="true"
       >
         Full-stack software engineer
       </span>
       <span
-        className="intro-loader__meta intro-loader__meta--right"
+        className="intro-loader__meta--right intro-loader__meta"
         aria-hidden="true"
       >
         Web · Backend · Mobile

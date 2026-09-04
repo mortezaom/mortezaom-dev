@@ -54,6 +54,5 @@ export function Portrait(props: { className?: string; alt?: string }) {
         </svg>
       </div>
     </div>
-    /* oxlint-enable jsx-a11y/prefer-tag-over-role */
   );
 }

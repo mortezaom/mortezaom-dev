@@ -45,14 +45,14 @@ function LoginPage() {
   };
 
   return (
-    <div className="mx-auto max-w-[420px] pt-[8vh]">
+    <div className="mx-auto pt-[8vh] max-w-105">
       <Card>
         <CardHeader>
           <CardTitle>Admin login</CardTitle>
           <CardDescription>Single admin from server env.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="mt-2 flex flex-col gap-4" onSubmit={submit}>
+          <form className="flex flex-col gap-4 mt-2" onSubmit={submit}>
             <div>
               <Label htmlFor="username" className="mb-1.5">
                 Username

@@ -37,7 +37,7 @@ export function Field(props: {
       <Label className="mb-1.5">{props.label}</Label>
       {props.children}
       {props.hint && (
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+        <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
           {props.hint}
         </p>
       )}
@@ -47,7 +47,7 @@ export function Field(props: {
 
 export function SaveBar(props: { state: SaveState; onSave: () => void }) {
   return (
-    <div className="sticky bottom-0 -mx-6 border-t bg-background/90 px-6 py-3 backdrop-blur">
+    <div className="bottom-0 sticky bg-background/90 backdrop-blur -mx-6 px-6 py-3 border-t">
       <div className="flex items-center gap-4">
         <Button
           type="button"
@@ -57,12 +57,12 @@ export function SaveBar(props: { state: SaveState; onSave: () => void }) {
           {props.state.status === 'saving' ? 'Saving…' : 'Save'}
         </Button>
         {props.state.status === 'saved' && (
-          <span className="text-sm text-green-600 dark:text-green-400">
+          <span className="text-green-600 dark:text-green-400 text-sm">
             Saved.
           </span>
         )}
         {props.state.status === 'error' && (
-          <span role="alert" className="text-sm text-destructive">
+          <span role="alert" className="text-destructive text-sm">
             {props.state.message}
           </span>
         )}
@@ -131,7 +131,7 @@ export function LinkList(props: {
                 onChange={(e) => props.onChange(i, 'label', e.target.value)}
               />
               <Input
-                className="flex-[2]"
+                className="flex-2"
                 placeholder="https://… or #anchor or mailto:…"
                 aria-label="URL"
                 value={row.href}
