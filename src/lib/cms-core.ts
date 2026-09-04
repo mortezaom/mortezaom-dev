@@ -468,7 +468,8 @@ export async function writeSeoFiles(siteUrl: string) {
   if (!dir) throw new Error('public/ directory not found, SEO files skipped');
   const today = new Date().toISOString().slice(0, 10);
   const loc = escapeXml(`${clean}/`);
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${loc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>1.0</priority>\n  </url>\n</urlset>\n`;
+  const contactLoc = escapeXml(`${clean}/contact`);
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${loc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>1.0</priority>\n  </url>\n  <url>\n    <loc>${contactLoc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>\n</urlset>\n`;
   const robots = `# https://www.robotstxt.org/robotstxt.html\nUser-agent: *\nDisallow:\n\nSitemap: ${clean}/sitemap.xml\n`;
   await writeFile(resolve(dir, 'sitemap.xml'), sitemap);
   await writeFile(resolve(dir, 'robots.txt'), robots);

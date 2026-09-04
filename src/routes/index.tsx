@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   type ComponentType,
   Fragment,
@@ -319,9 +319,9 @@ function App() {
               Résumé <ArrowUR size={11} />
             </a>
           </nav>
-          <a href={mailto} className={`${BTN} px-5.5 py-2.5 max-nav:hidden`}>
+          <Link to="/contact" className={`${BTN} px-5.5 py-2.5 max-nav:hidden`}>
             Contact me <ArrowR />
-          </a>
+          </Link>
           <button
             id="menu-toggle"
             type="button"
@@ -380,13 +380,13 @@ function App() {
             Résumé <ArrowUR size={22} />
           </a>
         </nav>
-        <a
-          href={mailto}
+        <Link
+          to="/contact"
           className={`${BTN} mt-auto justify-center px-4 py-3.25`}
           onClick={() => setMenuOpen(false)}
         >
           Contact me <ArrowR />
-        </a>
+        </Link>
       </div>
 
       <main id="main">
@@ -423,13 +423,12 @@ function App() {
                   >
                     View my work <ArrowR />
                   </button>
-                  <button
-                    type="button"
-                    onClick={onSectionButtonClick('#contact')}
+                  <Link
+                    to="/contact"
                     className="inline-flex items-center gap-2 px-6.5 py-2.75 border border-edge hover:border-ink font-medium text-[14px] transition-colors duration-300"
                   >
                     Contact me <ArrowR />
-                  </button>
+                  </Link>
                 </div>
               </div>
 
@@ -786,9 +785,9 @@ function App() {
               <p className="mt-4 max-w-[46ch] text-[12.5px] text-dim2 leading-[1.7]">
                 {profile.contactCopy}
               </p>
-              <a className={`${BTN} px-5.5 py-2.5 mt-6`} href={mailto}>
-                Get in touch <ArrowUR />
-              </a>
+              <Link to="/contact" className={`${BTN} px-5.5 py-2.5 mt-6`}>
+                Get in touch <ArrowR />
+              </Link>
             </div>
             <div className="flex flex-col items-end max-sm:items-start gap-3">
               <a

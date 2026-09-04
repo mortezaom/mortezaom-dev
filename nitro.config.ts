@@ -29,6 +29,15 @@ export default defineNitroConfig({
         ...SECURITY_HEADERS,
       },
     },
+    '/contact': {
+      swr: 60,
+      headers: {
+        'Cache-Control':
+          'public, max-age=60, s-maxage=60, stale-while-revalidate=600',
+        'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
+        ...SECURITY_HEADERS,
+      },
+    },
     '/admin/**': {
       prerender: false,
       cache: false,

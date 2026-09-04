@@ -43,6 +43,7 @@ const TABS = [
   { to: '/admin/profile', label: 'Profile' },
   { to: '/admin/work', label: 'Work' },
   { to: '/admin/career', label: 'Career' },
+  { to: '/admin/messages', label: 'Messages' },
 ] as const;
 
 function ForceDarkTheme() {

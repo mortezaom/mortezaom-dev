@@ -114,3 +114,17 @@ export const contentMeta = sqliteTable('content_meta', {
   value: text('value').notNull(),
   updatedAt: integer('updated_at').notNull(),
 });
+
+/** Contact form submissions (public writes, admin reads). */
+export const contactMessages = sqliteTable('contact_messages', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  message: text('message').notNull(),
+  ip: text('ip'),
+  userAgent: text('user_agent'),
+  origin: text('origin'),
+  isSpam: integer('is_spam').notNull().default(0),
+  spamReason: text('spam_reason'),
+  createdAt: integer('created_at').notNull(),
+});
