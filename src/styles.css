@@ -175,13 +175,41 @@
     background-image:
       radial-gradient(ellipse at center, transparent 30%, var(--c-bg) 72%),
       radial-gradient(
-        color-mix(in srgb, var(--c-ink) 4%, transparent) 1px,
+        color-mix(in srgb, var(--c-ink) 4.2%, transparent) 1px,
         transparent 1px
       );
     background-size:
       100% 100vh,
       20px 20px;
     background-attachment: fixed, scroll;
+  }
+
+  /* Canvas owns dots when JS runs: keep vignette only, no double-draw. */
+  .js .site-background {
+    background-image: radial-gradient(
+      ellipse at center,
+      transparent 30%,
+      var(--c-bg) 72%
+    );
+    background-size: 100% 100vh;
+    background-attachment: fixed;
+  }
+
+  .dot-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Dots sit behind content but above page bg. Isolation keeps
+     negative z-index inside this stacking context. */
+  .site-background {
+    isolation: isolate;
+  }
+
+  .site-background .dot-canvas {
+    z-index: -1;
   }
 
   .portrait-slices {

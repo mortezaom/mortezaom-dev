@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { IntroLoader } from '../components/intro-loader';
+import { DotBackground } from '../components/dot-background';
 import { SiteNotFound } from '../components/site-not-found';
 import { getTrackingSnippetFn } from '../server/content';
 import styleCss from '../styles.css?url';
@@ -172,6 +173,7 @@ function RootComponent() {
             }
             aria-hidden={locked ? 'true' : undefined}
           >
+            <DotBackground />
             <Outlet />
           </div>
         </Suspense>
