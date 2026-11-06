@@ -210,11 +210,11 @@
       "kind": "archive",
       "category": "Commercial product",
       "name": "Paper",
-      "href": "https://codecanyon.net/item/paper-flutter-news-app-with-firebase-backend/28068212",
+      "href": null,
       "description": "A cross-platform news app with its own admin panel, sold as a ready-made product on CodeCanyon.",
       "role": null,
       "status": null,
-      "linkLabel": "View on CodeCanyon",
+      "linkLabel": null,
       "technologies": ["Flutter", "Firebase", "Vue 2"],
       "built": [],
       "flow": []
