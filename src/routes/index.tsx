@@ -2,7 +2,6 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   type ComponentType,
   type CSSProperties,
-  Fragment,
   type MouseEvent as ReactMouseEvent,
   useEffect,
   useRef,
@@ -822,22 +821,18 @@ function App() {
               })}
             </div>
 
-            <div className="items-center gap-16 max-wide:gap-11 grid grid-cols-[1fr_1.35fr] max-wide:grid-cols-1 mt-[clamp(96px,12vw,160px)]">
+            <div className="mt-[clamp(96px,12vw,160px)]">
               <div data-reveal className={REVEAL}>
                 <h3 className="font-tight font-semibold text-[clamp(30px,3.6vw,46px)] leading-[1.06] tracking-[-0.045em]">
-                  {(section('skills')?.title ?? '')
-                    .split('\n')
-                    .map((line, i) => (
-                      <Fragment key={i}>
-                        {i > 0 && <br />}
-                        {line}
-                      </Fragment>
-                    ))}
+                  {(section('skills')?.title ?? '').replace(/\n/g, ' ')}
                 </h3>
               </div>
-              <div data-reveal className={REVEAL}>
+              <div
+                data-reveal
+                className={`${REVEAL} mt-[clamp(36px,4.5vw,56px)]`}
+              >
                 <div className="frame-card">
-                  <div className="grid grid-cols-2 max-sm:grid-cols-1 border-line border-t border-l">
+                  <div className="grid grid-cols-3 max-wide:grid-cols-2 max-sm:grid-cols-1 border-line border-t border-l">
                     {content.stats.map((s) => (
                       <div
                         key={s.value}

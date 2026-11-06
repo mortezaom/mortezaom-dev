@@ -93,16 +93,16 @@
       "value": "Product architecture",
       "label": "Data model and services, planned from day one"
     },
-    { "value": "Payments", "label": "Checkout, payment flows and payouts" },
     {
       "value": "Customer apps",
       "label": "Web and mobile, built as one product"
     },
-    { "value": "Team lead", "label": "Remote delivery with clear ownership" },
+    { "value": "Payments", "label": "Checkout, payment flows and payouts" },
     {
       "value": "Reliable releases",
       "label": "Background work, monitoring and calm launches"
     },
+    { "value": "Team lead", "label": "Remote delivery with clear ownership" },
     {
       "value": "AI-assisted delivery",
       "label": "Modern tools and workflows, same quality bar"
