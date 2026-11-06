@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   type ComponentType,
+  type CSSProperties,
   Fragment,
   type MouseEvent as ReactMouseEvent,
   useEffect,
@@ -113,8 +114,6 @@ const SEC_P = 'mt-[14px] text-[13px] leading-[1.7] text-dim';
 
 const LABEL2 = 'text-[11px] uppercase tracking-[.16em] text-dim2 font-semibold';
 
-const META = 'text-[12px] text-dim2 leading-[1.6]';
-
 const TAG =
   'text-[11px] font-medium text-dim2 border border-line rounded-none px-2.5 py-1';
 
@@ -156,41 +155,58 @@ function SectionHeader(props: { s?: SectionContent; bare?: boolean }) {
 
 /** A product's parts in order; filled = built by me, dashed = integrated. */
 function FlowMap(props: { nodes: FlowNode[] }) {
-  const mine = 'border-ink bg-ink/[.1]';
-  const ext = 'border-dim2 border-dashed text-dim';
+  // Rail + square markers, in the site's hairline language. Vertical on phones.
+  const marker = (mine: boolean) =>
+    `size-[7px] shrink-0 ${mine ? 'bg-ink' : 'border border-dim2 bg-bg'}`;
   return (
-    <figure className="mt-7">
-      <ol className="flex flex-wrap items-stretch gap-y-2">
+    <figure className="mt-9 w-full">
+      <ol
+        style={{ '--n': props.nodes.length } as CSSProperties}
+        className="grid grid-cols-[repeat(var(--n),minmax(0,1fr))] max-sm:grid-cols-1"
+      >
         {props.nodes.map((n, i) => (
-          <li key={n.label + i} className="flex items-center">
-            {i > 0 && (
-              <span aria-hidden="true" className="px-2 text-dim2">
-                →
+          <li
+            key={n.label + i}
+            className="relative pt-6 pr-4 max-sm:pt-0 max-sm:pr-0 max-sm:pb-5 max-sm:pl-7"
+          >
+            {i < props.nodes.length - 1 && (
+              <span
+                aria-hidden="true"
+                className="top-[3px] max-sm:top-[9px] right-0 max-sm:right-auto max-sm:bottom-0 left-0 max-sm:left-[3px] absolute bg-dim2/45 w-auto max-sm:w-px h-px max-sm:h-auto"
+              />
+            )}
+            <span
+              aria-hidden="true"
+              className={`absolute top-0 max-sm:top-[6px] left-0 ${marker(n.mine)}`}
+            />
+            <span
+              className={`block font-semibold text-[13px] leading-snug ${
+                n.mine ? '' : 'text-dim'
+              }`}
+            >
+              {n.label}
+            </span>
+            {n.detail && (
+              <span className="block mt-1 text-[11.5px] text-dim2 leading-snug">
+                {n.detail}
               </span>
             )}
-            <div className={`border px-3 py-2 ${n.mine ? mine : ext}`}>
-              <span className="block font-semibold text-[13px] leading-tight">
-                {n.label}
-              </span>
-              {n.detail && (
-                <span className="block mt-0.5 text-[11.5px] text-dim">
-                  {n.detail}
-                </span>
-              )}
-              <span className="sr-only">
-                {n.mine ? ' (built by me)' : ' (integrated service)'}
-              </span>
-            </div>
+            <span className="sr-only">
+              {n.mine ? ' (built by me)' : ' (integrated service)'}
+            </span>
           </li>
         ))}
       </ol>
-      <figcaption className={`${META} flex gap-5 mt-3`} aria-hidden="true">
-        <span className="inline-flex items-center gap-2">
-          <span className={`border size-3 ${mine}`} />
+      <figcaption
+        className={`${LABEL2} flex gap-6 mt-5 max-sm:mt-1`}
+        aria-hidden="true"
+      >
+        <span className="inline-flex items-center gap-2.5">
+          <span className={marker(true)} />
           Built by me
         </span>
-        <span className="inline-flex items-center gap-2">
-          <span className={`border size-3 ${ext}`} />
+        <span className="inline-flex items-center gap-2.5">
+          <span className={marker(false)} />
           Integrated
         </span>
       </figcaption>
