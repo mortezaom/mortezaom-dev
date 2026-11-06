@@ -820,7 +820,7 @@ function App() {
               })}
             </div>
 
-            <div className="items-start gap-16 max-wide:gap-11 grid grid-cols-[1fr_1.35fr] max-wide:grid-cols-1 mt-[clamp(96px,12vw,160px)]">
+            <div className="items-center gap-16 max-wide:gap-11 grid grid-cols-[1fr_1.35fr] max-wide:grid-cols-1 mt-[clamp(96px,12vw,160px)]">
               <div data-reveal className={REVEAL}>
                 <h3 className="font-tight font-semibold text-[clamp(30px,3.6vw,46px)] leading-[1.06] tracking-[-0.045em]">
                   {(section('skills')?.title ?? '')
