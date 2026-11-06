@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   type ComponentType,
-  Fragment,
   type MouseEvent as ReactMouseEvent,
   useEffect,
   useRef,
@@ -18,7 +17,7 @@ import {
   XIcon,
 } from '../components/icons';
 import { Portrait } from '../components/portrait';
-import type { PublicContent } from '../lib/content';
+import type { FlowNode, PublicContent, SectionContent } from '../lib/content';
 import { initPointerEffects } from '../lib/pointer-effects';
 import { getContentFn } from '../server/content';
 
@@ -108,25 +107,20 @@ const WRAP = 'max-w-[1240px] mx-auto px-6';
 const ANCHOR = 'scroll-mt-[84px]';
 
 const SEC_H2 =
-  'font-tight text-[clamp(32px,4.4vw,50px)] font-semibold tracking-[-0.045em]';
-const SEC_P = 'mt-[14px] text-[13px] leading-[1.7] text-dim';
+  'font-tight text-[clamp(28px,3.6vw,44px)] font-semibold leading-[1.08] tracking-[-0.045em]';
+const SEC_P = 'mt-[14px] text-[14px] leading-[1.7] text-dim';
 
-const LABEL2 = 'text-[11px] uppercase tracking-[.16em] text-dim2 font-semibold';
+const LABEL2 = 'text-[12px] uppercase tracking-[.14em] text-dim2 font-semibold';
 
-const TAG =
-  'text-[11px] font-medium text-dim2 border border-line rounded-none px-2.5 py-1';
+const META = 'text-[12.5px] text-dim2 leading-[1.6]';
+
+const SQUARE_LINK =
+  'flex justify-center items-center border border-edge hover:border-ink size-9 text-dim hover:text-ink transition-colors duration-300 shrink-0';
 
 const FOOT_LINK =
   'block text-[13px] font-medium py-1 text-dim hover:text-ink hover:underline';
 
-const SECTION_IDS = [
-  'home',
-  'about',
-  'work',
-  'experience',
-  'skills',
-  'contact',
-];
+const SECTION_IDS = ['home', 'work', 'built', 'career', 'about', 'contact'];
 
 const ICONS: Record<string, ComponentType> = {
   github: GhIcon,
@@ -134,6 +128,75 @@ const ICONS: Record<string, ComponentType> = {
   x: XIcon,
   mail: MailIcon,
 };
+
+const projectId = (name: string) =>
+  `project-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+
+/** Same header shape for every section; label matches the nav item. */
+function SectionHeader(props: { s?: SectionContent; count?: string }) {
+  return (
+    <div data-reveal className={`${REVEAL} border-line border-t pt-5`}>
+      <div className="flex justify-between items-baseline gap-4">
+        <p className={LABEL2}>{props.s?.eyebrow}</p>
+        {props.count && <p className={META}>{props.count}</p>}
+      </div>
+      <h2 className={`${SEC_H2} mt-4 max-w-[22ch]`}>{props.s?.title}</h2>
+      {props.s?.copy && (
+        <p className={`${SEC_P} max-w-[62ch]`}>{props.s.copy}</p>
+      )}
+    </div>
+  );
+}
+
+/** A product's parts in order; filled = built by me, dashed = integrated. */
+function FlowMap(props: { nodes: FlowNode[] }) {
+  const mine = 'border-ink bg-ink/[.1]';
+  const ext = 'border-dim2 border-dashed text-dim';
+  return (
+    <figure className="mt-7">
+      <ol className="flex max-sm:flex-col flex-wrap items-stretch gap-y-2">
+        {props.nodes.map((n, i) => (
+          <li
+            key={n.label + i}
+            className="flex max-sm:flex-col items-center max-sm:items-stretch"
+          >
+            {i > 0 && (
+              <span
+                aria-hidden="true"
+                className="max-sm:self-center px-2 max-sm:px-0 text-dim2 max-sm:rotate-90"
+              >
+                →
+              </span>
+            )}
+            <div className={`border px-3 py-2 ${n.mine ? mine : ext}`}>
+              <span className="block font-semibold text-[13px] leading-tight">
+                {n.label}
+              </span>
+              {n.detail && (
+                <span className="block mt-0.5 text-[11.5px] text-dim">
+                  {n.detail}
+                </span>
+              )}
+              <span className="sr-only">
+                {n.mine ? ' (built by me)' : ' (integrated service)'}
+              </span>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <figcaption className={`${META} flex gap-5 mt-3`} aria-hidden="true">
+        <span className="inline-flex items-center gap-2">
+          <span className={`border size-3 ${mine}`} />
+          Built by me
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className={`border size-3 ${ext}`} />
+          Integrated
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
 
 const decodeId = (value: string) => {
   try {
@@ -151,8 +214,13 @@ function App() {
     (s) => [s.label, s.href, ICONS[s.icon] ?? GhIcon],
   );
   const spotlight = content.projects.filter((p) => p.kind === 'spotlight');
-  const engineering = content.projects.filter((p) => p.kind === 'engineering');
-  const archive = content.projects.filter((p) => p.kind === 'archive');
+  const built = content.projects.filter((p) => p.kind !== 'spotlight');
+  const firstYear = Math.min(
+    ...content.experience.map((x) => Number(x.startDate.slice(0, 4))),
+  );
+  const careerSpan = Number.isFinite(firstYear)
+    ? `${firstYear} – now`
+    : undefined;
   const section = (key: string) => content.sections[key];
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -394,174 +462,129 @@ function App() {
           id="home"
           className={`${ANCHOR} relative isolate overflow-x-clip`}
         >
-          <div className={`${WRAP} relative`}>
-            <div className="flex flex-col pt-[clamp(24px,3.5vw,52px)] min-[1200px]:min-h-[calc(100svh-68px)]">
-              <div className="py-[clamp(28px,5vw,72px)] max-w-280">
-                <div>
-                  <h1 className="font-tight font-semibold text-[clamp(42px,7.2vw,118px)] leading-[0.85]">
-                    {profile.heroName.map((line) => (
-                      <span key={line} className="block">
-                        {line}
-                      </span>
-                    ))}
-                  </h1>
-                  <p className={`${LABEL2} mt-[clamp(18px,2vw,28px)] text-dim`}>
-                    {profile.heroRole}
-                  </p>
-                </div>
+          <div
+            className={`${WRAP} pt-[clamp(32px,4vw,56px)] pb-[clamp(48px,5vw,64px)]`}
+          >
+            <p className={LABEL2}>{profile.heroRole}</p>
+            <h1 className="mt-4 font-tight font-semibold text-[clamp(34px,4.6vw,64px)] leading-[0.95]">
+              {/* One line on wide screens so work shows in the first screen. */}
+              {profile.heroName.map((line) => (
+                <span key={line} className="inline-block mr-[0.28em]">
+                  {line}
+                </span>
+              ))}
+            </h1>
+            <p className="mt-[clamp(22px,2.6vw,34px)] max-w-[32ch] font-tight font-semibold text-[clamp(20px,2.4vw,30px)] leading-[1.2] tracking-[-0.02em]">
+              {profile.heroTagline}
+            </p>
+            {profile.availability && (
+              <p className="flex items-center gap-2.5 mt-5 text-[14px] text-dim">
+                <span
+                  aria-hidden="true"
+                  className="bg-[#4ade80] rounded-full size-2 shrink-0"
+                />
+                {profile.availability}
+              </p>
+            )}
+            <div className="flex flex-wrap justify-between items-center gap-x-8 gap-y-4 mt-8">
+              <div className="flex max-sm:flex-wrap flex-nowrap gap-3">
+                <button
+                  type="button"
+                  onClick={onSectionButtonClick('#work')}
+                  className={`${BTN} px-6.5 py-2.75 shrink-0`}
+                >
+                  See my work <ArrowR />
+                </button>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2 px-6.5 py-2.75 border border-edge hover:border-ink font-medium text-[14px] transition-colors duration-300"
+                >
+                  Contact me <ArrowR />
+                </Link>
               </div>
-
-              <div className="flex max-[1100px]:flex-col justify-between items-center max-[1100px]:items-start gap-8 max-[1100px]:gap-6 mt-[clamp(28px,4vw,52px)] py-[clamp(20px,2.6vw,30px)] border-line border-t overflow-visible cursor-zone halo-target halo-cell">
-                <p className="font-tight font-semibold text-[clamp(16px,1.8vw,23px)] leading-[1.2] tracking-[-0.02em]">
-                  {profile.heroTagline}
-                </p>
-                <div className="flex max-sm:flex-wrap flex-nowrap gap-3">
-                  <button
-                    type="button"
-                    onClick={onSectionButtonClick('#work')}
-                    className={`${BTN} px-6.5 py-2.75 shrink-0`}
-                  >
-                    View my work <ArrowR />
-                  </button>
-                  <Link
-                    to="/contact"
-                    className="inline-flex items-center gap-2 px-6.5 py-2.75 border border-edge hover:border-ink font-medium text-[14px] transition-colors duration-300"
-                  >
-                    Contact me <ArrowR />
-                  </Link>
-                </div>
-              </div>
-
-              <div className="flex justify-end max-nav:justify-start gap-8 py-2 border-line border-t">
+              <div className="flex gap-7">
                 {content.quickLinks.map((l) => (
                   <a
                     key={l.href + l.label}
                     href={l.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`${LABEL2} py-3.5 hover:text-ink transition-colors duration-300`}
+                    className={`${LABEL2} py-2 hover:text-ink transition-colors duration-300`}
                   >
                     {l.label}
                   </a>
                 ))}
               </div>
-              <div className="flex-1" aria-hidden="true" />
             </div>
 
-            <div
-              data-reveal
-              className={`${REVEAL} cursor-zone halo-target frame-card overflow-hidden mt-[clamp(36px,5vw,76px)] rounded-none bg-surface p-[clamp(26px,4vw,54px)] grid gap-[clamp(32px,4vw,48px)]`}
-            >
-              <span className="halo-light" aria-hidden="true" />
-              <div className="z-1 relative">
-                <h2 className="font-tight font-semibold text-[clamp(26px,3.4vw,44px)] leading-[1.04] tracking-[-0.045em]">
-                  {profile.heroCardTitle}
-                </h2>
-                <p className="mt-4 max-w-[62ch] text-[13px] text-dim leading-[1.75]">
-                  {profile.heroCardCopy}
-                </p>
-              </div>
-              <div className="z-1 relative grid grid-cols-3">
-                {content.stats.map((s, n) => (
-                  <div
-                    key={s.label + s.value}
-                    className={`min-w-0 text-center px-[clamp(8px,1.6vw,22px)] ${
-                      n > 0 ? 'border-l border-line' : ''
-                    }`}
-                  >
-                    <div className="font-tight font-semibold text-[clamp(16px,2.2vw,30px)] leading-none tracking-[-0.035em] whitespace-nowrap">
-                      {s.value}
-                    </div>
-                    <div className="block mt-3 font-semibold text-[9px] text-dim2 sm:text-[11px] uppercase tracking-[.06em] sm:tracking-[.16em]">
-                      {s.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="about" className={`${ANCHOR} py-[clamp(72px,9vw,120px)]`}>
-          <div
-            className={`${WRAP} about-halo cursor-zone halo-target halo-cell overflow-visible grid grid-cols-[minmax(0,1fr)_minmax(380px,520px)] gap-[clamp(48px,8vw,112px)] items-center max-wide:grid-cols-1`}
-          >
-            <div data-reveal className={REVEAL}>
-              <h2 className={SEC_H2}>
-                {section('about')?.title ?? 'About me'}
-              </h2>
-              {profile.aboutParagraphs.map((p, i) => (
-                <p
-                  key={i}
-                  className={`${i === 0 ? 'mt-6' : 'mt-3'} max-w-[58ch] text-[clamp(15px,1.5vw,18px)] text-dim leading-[1.52] tracking-[-0.012em] [word-spacing:-0.035em]`}
+            <ul className="grid grid-cols-4 max-nav:grid-cols-2 mt-[clamp(32px,4vw,48px)] border-line border-t border-b cursor-zone">
+              {content.stats.map((s, n) => (
+                <li
+                  key={s.value + s.label}
+                  className={`min-w-0 p-[clamp(16px,2vw,24px)] halo-target halo-cell border-line ${
+                    n > 0 ? 'border-l' : ''
+                  } max-nav:[&:nth-child(odd)]:border-l-0 max-nav:[&:nth-child(n+3)]:border-t`}
                 >
-                  {p}
-                </p>
+                  <p className="font-tight font-semibold text-[17px] tracking-[-0.02em]">
+                    {s.value}
+                  </p>
+                  <p className="mt-1.5 text-[13.5px] text-dim leading-normal">
+                    {s.label}
+                  </p>
+                </li>
               ))}
-              <a
-                href={profile.cvPath}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-7 py-3 border-ink border-b font-semibold text-[12.5px]"
-              >
-                Download résumé <ArrowUR size={12} />
-              </a>
-            </div>
-
-            <Portrait
-              className={`${REVEAL} max-wide:order-first`}
-              alt={profile.portraitAlt}
-            />
+            </ul>
           </div>
         </section>
 
         <section id="work" className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}>
           <div className={WRAP}>
-            <div data-reveal className={`${REVEAL} max-w-170`}>
-              <p className={LABEL2}>{section('workSpotlight')?.eyebrow}</p>
-              <h2 className="mt-3 font-tight font-semibold text-[clamp(28px,3.8vw,44px)] leading-[1.08] tracking-[-0.045em]">
-                {section('workSpotlight')?.title}
-              </h2>
-              <p className={SEC_P}>{section('workSpotlight')?.copy}</p>
-            </div>
-            <div className="mt-[clamp(44px,5vw,64px)] border-line border-t">
+            <SectionHeader
+              s={section('workSpotlight')}
+              count={`${spotlight.length} products`}
+            />
+            <div className="gap-[clamp(20px,2.6vw,32px)] grid grid-cols-2 max-wide:grid-cols-1 mt-[clamp(28px,3.5vw,44px)]">
               {spotlight.map((project) => (
                 <article
                   key={project.name}
+                  id={projectId(project.name)}
                   data-reveal
-                  className={`${REVEAL} project-card halo-target grid grid-cols-[.72fr_1.28fr] gap-[clamp(28px,6vw,80px)] border-b border-line py-[clamp(36px,5vw,64px)] last:border-b-0 max-wide:grid-cols-1 max-wide:gap-6`}
+                  className={`${REVEAL} ${ANCHOR} project-card halo-target flex flex-col border border-line bg-surface p-[clamp(22px,3vw,36px)]`}
                 >
-                  <div>
-                    <p className={LABEL2}>{project.category}</p>
-                    <h3 className="mt-3 font-tight font-semibold text-[clamp(30px,4.4vw,54px)] tracking-[-0.045em]">
-                      {project.name}
-                    </h3>
-                    <p
-                      className={`${LABEL2} mt-4 normal-case tracking-[.04em]`}
-                    >
-                      {project.role}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-start">
-                    <p className="max-w-[54ch] text-[clamp(17px,2vw,22px)] leading-normal">
-                      {project.description}
-                    </p>
-                    <p className="mt-4 max-w-[66ch] text-[13px] text-dim leading-[1.7]">
-                      {project.ownership}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 mt-5">
-                      {project.technologies.map((technology) => (
-                        <span key={technology} className={TAG}>
-                          {technology}
-                        </span>
+                  <p className={LABEL2}>{project.category}</p>
+                  <h3 className="mt-3 font-tight font-semibold text-[clamp(28px,3.4vw,44px)] leading-none tracking-[-0.045em]">
+                    {project.name}
+                  </h3>
+                  <p className={`${META} mt-3`}>{project.role}</p>
+                  <p className="mt-5 max-w-[48ch] text-[clamp(16px,1.6vw,19px)] leading-normal">
+                    {project.description}
+                  </p>
+                  {project.flow.length > 0 && <FlowMap nodes={project.flow} />}
+                  {project.built.length > 0 && (
+                    <ul className="gap-2 grid mt-6">
+                      {project.built.map((item) => (
+                        <li
+                          key={item}
+                          className="flex gap-3 text-[14px] text-dim leading-[1.55]"
+                        >
+                          <span aria-hidden="true" className="text-dim2">
+                            —
+                          </span>
+                          {item}
+                        </li>
                       ))}
-                    </div>
+                    </ul>
+                  )}
+                  <div className="flex flex-wrap justify-between items-end gap-4 mt-auto pt-7">
+                    <p className={`${META} max-w-[46ch]`}>
+                      {project.technologies.join(' · ')}
+                    </p>
                     {project.href && (
                       <a
                         href={project.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 mt-7 pb-2 border-ink border-b font-semibold text-[12.5px]"
+                        className="inline-flex items-center gap-1.5 pb-2 border-ink border-b font-semibold text-[13px]"
                       >
                         {project.linkLabel} <ArrowUR size={12} />
                       </a>
@@ -570,203 +593,145 @@ function App() {
                 </article>
               ))}
             </div>
-
-            <div className="mt-[clamp(96px,12vw,160px)]">
-              <div data-reveal className={`${REVEAL} max-w-155`}>
-                <p className={LABEL2}>{section('workEngineering')?.eyebrow}</p>
-                <h3 className="mt-3 font-tight font-semibold text-[clamp(24px,3vw,36px)] leading-[1.08] tracking-[-0.04em]">
-                  {section('workEngineering')?.title}
-                </h3>
-                <p className={SEC_P}>{section('workEngineering')?.copy}</p>
-              </div>
-              <div className="gap-x-[clamp(32px,6vw,80px)] grid grid-cols-2 max-nav:grid-cols-1 mt-10 border-line border-t">
-                {engineering.map((project, index) => (
-                  <article
-                    key={project.name}
-                    data-reveal
-                    className={`${REVEAL} grid grid-cols-[42px_1fr] gap-5 border-b border-line py-[clamp(30px,4vw,44px)]`}
-                  >
-                    <span className="pt-1 font-tight font-semibold text-[12px] text-dim2 select-none">
-                      0{index + 1}
-                    </span>
-                    <div className="flex flex-col min-w-0">
-                      <div className="flex justify-between items-center gap-4">
-                        <p className={LABEL2}>{project.category}</p>
-                        {project.status && (
-                          <p className="flex items-center gap-2 font-semibold text-[10px] text-dim2 uppercase tracking-[.12em]">
-                            <span
-                              className="bg-dim2 size-1.5"
-                              aria-hidden="true"
-                            />
-                            {project.status}
-                          </p>
-                        )}
-                      </div>
-                      <h4 className="mt-5 font-tight font-semibold text-[clamp(21px,2.4vw,29px)] leading-[1.1] tracking-[-0.035em]">
-                        {project.name}
-                      </h4>
-                      <p className="mt-3 max-w-[54ch] text-[13px] text-dim leading-[1.7]">
-                        {project.description}
-                      </p>
-                      <div className="flex max-sm:flex-col justify-between items-end max-sm:items-start gap-5 mt-auto pt-7">
-                        <div className="flex flex-wrap gap-1.5">
-                          {project.technologies.map((technology) => (
-                            <span key={technology} className={TAG}>
-                              {technology}
-                            </span>
-                          ))}
-                        </div>
-                        {project.href && (
-                          <a
-                            href={project.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`${project.linkLabel}: ${project.name}`}
-                            className="flex justify-center items-center border border-edge hover:border-ink size-9 text-dim hover:text-ink transition-colors duration-300 shrink-0"
-                          >
-                            <ArrowUR size={13} />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-[clamp(96px,12vw,160px)]">
-              <div data-reveal className={`${REVEAL} max-w-155`}>
-                <p className={LABEL2}>{section('workArchive')?.eyebrow}</p>
-                <h3 className="mt-3 font-tight font-semibold text-[clamp(24px,3vw,36px)] leading-[1.08] tracking-[-0.04em]">
-                  {section('workArchive')?.title}
-                </h3>
-              </div>
-              <div className="mt-9 border-line border-t">
-                {archive.map((project) => (
-                  <article
-                    key={project.name}
-                    data-reveal
-                    className={`${REVEAL} flex items-center justify-between gap-8 border-b border-line py-6 max-sm:flex-col max-sm:items-start max-sm:gap-4`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <h4 className="font-tight font-semibold text-[clamp(20px,2.5vw,28px)] tracking-[-0.03em]">
-                        {project.name}
-                      </h4>
-                      {project.href && (
-                        <a
-                          href={project.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`Open ${project.name}`}
-                          className="text-dim hover:text-ink transition-colors duration-300"
-                        >
-                          <ArrowUR size={14} />
-                        </a>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {project.technologies.map((technology) => (
-                        <span key={technology} className={TAG}>
-                          {technology}
-                        </span>
-                      ))}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
 
-        <section
-          id="experience"
-          className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}
-        >
+        <section id="built" className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}>
           <div className={WRAP}>
-            <div
-              data-reveal
-              className={`${REVEAL} text-center max-w-155 mx-auto`}
-            >
-              <h2 className={SEC_H2}>
-                {section('experience')?.title ?? 'Experience'}
-              </h2>
-              <p className={SEC_P}>{section('experience')?.copy}</p>
-            </div>
-            <div
-              data-reveal
-              className={`${REVEAL} cursor-zone mt-[clamp(40px,5vw,56px)] border-t border-line`}
-            >
-              {content.experience.map((x) => (
-                <div key={x.role + x.company + x.period}>
-                  <div className="items-start gap-6 max-nav:gap-2 grid grid-cols-[150px_1fr] max-nav:grid-cols-1 px-2.5 max-nav:px-1 py-8 max-nav:py-6.5 border-line border-b halo-target halo-cell">
-                    <span className="pt-1.5 max-nav:pt-0 font-medium text-[12px] text-dim2 whitespace-nowrap">
-                      {x.period}
-                    </span>
-                    <div>
-                      <h3 className="font-tight font-semibold text-[clamp(19px,2vw,24px)] tracking-tight">
-                        {x.role}{' '}
-                        <span className="font-medium text-dim">
-                          · {x.company}
-                        </span>
-                      </h3>
-                      <p className="mt-2 max-w-[68ch] text-[12.5px] text-dim leading-[1.65]">
-                        {x.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mt-3.5">
-                        {x.stack.map((t) => (
-                          <span key={t} className={TAG}>
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+            <SectionHeader
+              s={section('workEngineering')}
+              count={`${built.length} projects`}
+            />
+            <div className="gap-px grid grid-cols-3 max-wide:grid-cols-2 max-sm:grid-cols-1 bg-line mt-[clamp(28px,3.5vw,44px)] border border-line">
+              {built.map((project) => (
+                <article
+                  key={project.name}
+                  data-reveal
+                  className={`${REVEAL} flex flex-col min-w-0 bg-bg p-[clamp(20px,2.4vw,28px)] halo-target halo-cell`}
+                >
+                  <p className={LABEL2}>
+                    {[project.category, project.status]
+                      .filter(Boolean)
+                      .join(' · ') || 'Earlier work'}
+                  </p>
+                  <h3 className="mt-4 font-tight font-semibold text-[clamp(21px,2.2vw,26px)] leading-[1.1] tracking-[-0.035em]">
+                    {project.name}
+                  </h3>
+                  {project.description && (
+                    <p className="mt-2.5 text-[14px] text-dim leading-[1.6]">
+                      {project.description}
+                    </p>
+                  )}
+                  <div className="flex justify-between items-end gap-4 mt-auto pt-6">
+                    <p className={META}>{project.technologies.join(' · ')}</p>
+                    {project.href && (
+                      <a
+                        href={project.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${project.linkLabel ?? 'Open'}: ${project.name}`}
+                        className={SQUARE_LINK}
+                      >
+                        <ArrowUR size={13} />
+                      </a>
+                    )}
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="skills" className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}>
-          <div
-            className={`${WRAP} grid grid-cols-[1fr_1.35fr] gap-16 items-start max-wide:grid-cols-1 max-wide:gap-11`}
-          >
-            <div data-reveal className={REVEAL}>
-              <h2 className="font-tight font-semibold text-[clamp(30px,3.6vw,46px)] leading-[1.06] tracking-[-0.045em]">
-                {(section('skills')?.title ?? '').split('\n').map((line, i) => (
-                  <Fragment key={i}>
-                    {i > 0 && <br />}
-                    {line}
-                  </Fragment>
-                ))}
-              </h2>
-            </div>
-            <div data-reveal className={`${REVEAL} frame-card`}>
-              <div className="grid grid-cols-2 max-sm:grid-cols-1 border-line border-t border-l">
-                {content.skillGroups.map((group) => (
+        <section id="career" className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}>
+          <div className={WRAP}>
+            <SectionHeader s={section('experience')} count={careerSpan} />
+            <div
+              data-reveal
+              className={`${REVEAL} cursor-zone mt-[clamp(20px,2.5vw,32px)]`}
+            >
+              {content.experience.map((x) => {
+                const linked = spotlight.find((p) => p.name === x.project);
+                return (
                   <div
-                    key={group.name}
-                    className="p-[clamp(22px,3vw,34px)] border-line border-r border-b min-h-42.5 text-center halo-target halo-cell"
+                    key={x.role + x.company + x.period}
+                    className="items-start gap-6 max-nav:gap-1.5 grid grid-cols-[150px_1fr] max-nav:grid-cols-1 px-2.5 max-nav:px-1 py-6 border-line border-b halo-target halo-cell"
                   >
-                    <h3 className={LABEL2}>{group.name}</h3>
-                    <div className="flex flex-wrap justify-center gap-y-2 mt-6">
-                      {group.technologies.map((technology, index) => (
-                        <span
-                          key={technology}
-                          className="font-semibold text-[14px] text-dim hover:text-ink transition-colors duration-300"
-                        >
-                          {technology}
-                          {index < group.technologies.length - 1 && (
-                            <span aria-hidden="true" className="mx-3 text-dim2">
-                              •
-                            </span>
-                          )}
+                    <span className="pt-1 max-nav:pt-0 text-[13px] text-dim2 whitespace-nowrap">
+                      {x.period}
+                    </span>
+                    <div>
+                      <h3 className="font-tight font-semibold text-[clamp(18px,1.9vw,22px)] tracking-tight">
+                        {x.role}{' '}
+                        <span className="font-medium text-dim">
+                          · {x.company}
                         </span>
-                      ))}
+                      </h3>
+                      {linked ? (
+                        <button
+                          type="button"
+                          onClick={onSectionButtonClick(
+                            `#${projectId(linked.name)}`,
+                          )}
+                          className="inline-flex items-center gap-1.5 mt-2 text-[14px] text-dim hover:text-ink underline underline-offset-4 decoration-edge hover:decoration-ink transition-colors duration-300"
+                        >
+                          See {linked.name} in Work{' '}
+                          <span aria-hidden="true">↑</span>
+                        </button>
+                      ) : (
+                        <p className="mt-2 max-w-[68ch] text-[14px] text-dim leading-[1.65]">
+                          {x.description}
+                        </p>
+                      )}
+                      <p className={`${META} mt-2.5`}>{x.stack.join(' · ')}</p>
                     </div>
                   </div>
-                ))}
+                );
+              })}
+              <div className="items-start gap-6 max-nav:gap-3 grid grid-cols-[150px_1fr] max-nav:grid-cols-1 px-2.5 max-nav:px-1 py-6 border-line border-b">
+                <span className="pt-0.5 text-[13px] text-dim2">
+                  {section('skills')?.title ?? 'Toolbox'}
+                </span>
+                <dl className="gap-x-10 gap-y-3 grid grid-cols-2 max-sm:grid-cols-1">
+                  {content.skillGroups.map((g) => (
+                    <div key={g.name}>
+                      <dt className={META}>{g.name}</dt>
+                      <dd className="mt-0.5 text-[14px]">
+                        {g.technologies.join(' · ')}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="about" className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}>
+          <div className={WRAP}>
+            <SectionHeader s={section('about')} />
+            <div className="items-center gap-[clamp(40px,7vw,96px)] grid grid-cols-[minmax(0,1fr)_minmax(320px,440px)] max-wide:grid-cols-1 mt-[clamp(28px,3.5vw,44px)] overflow-visible about-halo cursor-zone halo-target halo-cell">
+              <div data-reveal className={REVEAL}>
+                {profile.aboutParagraphs.map((p, i) => (
+                  <p
+                    key={i}
+                    className={`${i === 0 ? '' : 'mt-3'} max-w-[58ch] text-[clamp(15px,1.5vw,18px)] text-dim leading-[1.52] tracking-[-0.012em] [word-spacing:-0.035em]`}
+                  >
+                    {p}
+                  </p>
+                ))}
+                <a
+                  href={profile.cvPath}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 mt-7 py-3 border-ink border-b font-semibold text-[13px]"
+                >
+                  Download résumé <ArrowUR size={12} />
+                </a>
+              </div>
+              <Portrait
+                className={`${REVEAL} max-wide:order-first`}
+                alt={profile.portraitAlt}
+              />
             </div>
           </div>
         </section>
@@ -782,9 +747,18 @@ function App() {
               <h2 className="font-tight font-semibold text-[clamp(28px,3.6vw,46px)] leading-[1.08] tracking-[-0.045em]">
                 {profile.contactHeading}
               </h2>
-              <p className="mt-4 max-w-[46ch] text-[12.5px] text-dim2 leading-[1.7]">
+              <p className="mt-4 max-w-[46ch] text-[14px] text-dim leading-[1.7]">
                 {profile.contactCopy}
               </p>
+              {profile.availability && (
+                <p className="flex items-center gap-2.5 mt-3 text-[13px] text-dim2">
+                  <span
+                    aria-hidden="true"
+                    className="bg-[#4ade80] rounded-full size-2 shrink-0"
+                  />
+                  {profile.availability}
+                </p>
+              )}
               <Link to="/contact" className={`${BTN} px-5.5 py-2.5 mt-6`}>
                 Get in touch <ArrowR />
               </Link>

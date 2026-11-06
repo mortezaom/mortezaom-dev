@@ -23,6 +23,7 @@ import {
   assertTrackingSnippet,
   bumpVersion,
   exportSeedObject,
+  flowJson,
   importValidated,
   stringifySeed,
   validateSeed,
@@ -295,8 +296,7 @@ export const saveProfileFn = createServerFn({ method: 'POST' })
       heroName: JSON.stringify(strList(p.heroName)),
       heroRole: req(p.heroRole, 'profile.heroRole'),
       heroTagline: req(p.heroTagline, 'profile.heroTagline'),
-      heroCardTitle: req(p.heroCardTitle, 'profile.heroCardTitle'),
-      heroCardCopy: req(p.heroCardCopy, 'profile.heroCardCopy'),
+      availability: opt(p.availability) || null,
       aboutParagraphs: JSON.stringify(strList(p.aboutParagraphs)),
       portraitAlt: req(p.portraitAlt, 'profile.portraitAlt'),
       contactHeading: req(p.contactHeading, 'profile.contactHeading'),
@@ -336,11 +336,12 @@ interface ProjectIn {
   name: unknown;
   href: unknown;
   description: unknown;
-  ownership: unknown;
   role: unknown;
   status: unknown;
   linkLabel: unknown;
   technologies: unknown;
+  built: unknown;
+  flow: unknown;
 }
 const projectRow = (p: ProjectIn) => {
   const kind = req(p.kind, 'projects[].kind');
@@ -355,11 +356,12 @@ const projectRow = (p: ProjectIn) => {
     name: req(p.name, 'projects[].name'),
     href: optHref(p.href, 'projects[].href'),
     description: opt(p.description) ?? null,
-    ownership: opt(p.ownership) ?? null,
     role: opt(p.role) ?? null,
     status: opt(p.status) ?? null,
     linkLabel: opt(p.linkLabel) ?? null,
     technologies: JSON.stringify(strList(p.technologies)),
+    built: JSON.stringify(strList(p.built)),
+    flow: flowJson(p.flow),
     sortOrder: 0,
   };
 };
@@ -372,7 +374,6 @@ export const saveWorkFn = createServerFn({ method: 'POST' })
     const sections = {
       workSpotlight: section(secs.workSpotlight, 'workSpotlight'),
       workEngineering: section(secs.workEngineering, 'workEngineering'),
-      workArchive: section(secs.workArchive, 'workArchive'),
     };
     if (!Array.isArray(data.projects))
       throw new Error('Invalid content: projects must be an array');
@@ -422,6 +423,7 @@ export const saveCareerFn = createServerFn({ method: 'POST' })
       startDate: req(e.startDate, 'experience[].startDate'),
       description: req(e.description, 'experience[].description'),
       stack: JSON.stringify(strList(e.stack)),
+      project: opt(e.project) || null,
       sortOrder: i,
     }));
     const skills = (data.skillGroups as Record<string, unknown>[]).map(

@@ -14,9 +14,8 @@
     "cvPath": "/Morteza-Omar-Mohammadi-CV.pdf",
     "heroName": ["MORTEZA", "OMAR", "MOHAMMADI"],
     "heroRole": "Full-Stack Software Engineer",
-    "heroTagline": "I design systems, lead development, and ship reliable products.",
-    "heroCardTitle": "Shipping products end to end",
-    "heroCardCopy": "Building production backend, web, and mobile products since 2020.",
+    "heroTagline": "I build products end to end, from the first data model to the app people use.",
+    "availability": "Open to projects, freelance work and product-lead roles",
     "aboutParagraphs": [
       "I'm a full-stack software engineer who takes products from the first data model to production release. I work across backend services, payments, web applications, and Flutter mobile apps, and I lead remote delivery for ticketing and mobility products.",
       "I care about clear ownership, maintainable code, reliable releases, and software that feels simple to use."
@@ -26,43 +25,32 @@
     "contactCopy": "Have a question or want to discuss an opportunity? Send me a message."
   },
   "sections": [
-    { "key": "about", "eyebrow": null, "title": "About me", "copy": null },
     {
       "key": "workSpotlight",
-      "eyebrow": "Spotlight",
-      "title": "Work that defines what I do now.",
-      "copy": "Production products where I own major parts of the engineering, from system design and backend services to customer-facing web and mobile experiences."
+      "eyebrow": "Work",
+      "title": "Products I lead",
+      "copy": "Production products where I own the engineering. Filled boxes are the parts I built."
     },
     {
       "key": "workEngineering",
-      "eyebrow": "Under the Hood",
-      "title": "Focused systems and engineering work.",
-      "copy": "Open-source projects, backend systems, and technical builds that explore a specific problem in more depth."
-    },
-    {
-      "key": "workArchive",
-      "eyebrow": "From the Archive",
-      "title": "Earlier work that shaped my experience.",
+      "eyebrow": "Built",
+      "title": "Open source and earlier work",
       "copy": null
     },
     {
       "key": "experience",
-      "eyebrow": null,
-      "title": "Experience",
-      "copy": "My work has progressed from web and mobile development to leading complete product builds across backend, web, mobile, and payments."
-    },
-    {
-      "key": "skills",
-      "eyebrow": null,
-      "title": "Tools I use to\nbuild and ship",
+      "eyebrow": "Career",
+      "title": "Where I have worked",
       "copy": null
-    }
+    },
+    { "key": "skills", "eyebrow": null, "title": "Toolbox", "copy": null },
+    { "key": "about", "eyebrow": "About", "title": "About me", "copy": null }
   ],
   "navLinks": [
-    { "label": "About", "href": "#about" },
     { "label": "Work", "href": "#work" },
-    { "label": "Experience", "href": "#experience" },
-    { "label": "Skills", "href": "#skills" }
+    { "label": "Built", "href": "#built" },
+    { "label": "Career", "href": "#career" },
+    { "label": "About", "href": "#about" }
   ],
   "quickLinks": [
     { "label": "GitHub", "href": "https://github.com/mortezaom" },
@@ -90,9 +78,13 @@
     { "label": "bilit.events", "href": "https://bilit.events" }
   ],
   "stats": [
-    { "value": "Since 2020", "label": "Building products" },
-    { "value": "Thousands", "label": "Customers served" },
-    { "value": "Evolve + AI", "label": "Modern tools and workflows" }
+    {
+      "value": "Backend",
+      "label": "Node.js and Go services, queues, MongoDB and Postgres"
+    },
+    { "value": "Payments", "label": "Stripe checkout and payment flows" },
+    { "value": "Web", "label": "React, Next.js and Vue customer apps" },
+    { "value": "Mobile", "label": "Flutter apps, including a ticket scanner" }
   ],
   "projects": [
     {
@@ -101,7 +93,6 @@
       "name": "Bilit.Events",
       "href": "https://bilit.events",
       "description": "An event-ticketing platform covering purchases, payments, seat management, ticket delivery, and event check-in.",
-      "ownership": "I lead engineering across event and order services, Stripe payment flows, background jobs, the customer web application, and the Flutter ticket-scanner app.",
       "role": "Lead Developer · November 2024 — Present",
       "status": null,
       "linkLabel": "Visit Bilit.Events",
@@ -113,6 +104,26 @@
         "MongoDB",
         "Redis",
         "Stripe"
+      ],
+      "built": [
+        "Event and order services, including seat management",
+        "Stripe payment flows and background jobs for ticket delivery",
+        "Customer web app and the Flutter check-in scanner"
+      ],
+      "flow": [
+        { "label": "Customer web app", "detail": "React", "mine": true },
+        {
+          "label": "Event & order services",
+          "detail": "Node.js · MongoDB",
+          "mine": true
+        },
+        { "label": "Stripe", "detail": "payment flows", "mine": false },
+        {
+          "label": "Background jobs",
+          "detail": "BullMQ · Redis",
+          "mine": true
+        },
+        { "label": "Scanner app", "detail": "Flutter", "mine": true }
       ]
     },
     {
@@ -121,11 +132,35 @@
       "name": "Pedal24",
       "href": "https://pedal24.com",
       "description": "A cycling platform for bike services, marketplace listings, community events, and useful local spots.",
-      "ownership": "I lead development across the Flutter app, backend services, product and order flows, service workflows, and payment integration.",
       "role": "Lead Developer · January 2026 — Present",
       "status": null,
       "linkLabel": "Visit Pedal24",
-      "technologies": ["Flutter", "TypeScript", "Node.js", "Firebase", "Stripe"]
+      "technologies": [
+        "Flutter",
+        "TypeScript",
+        "Node.js",
+        "Firebase",
+        "Stripe"
+      ],
+      "built": [
+        "The Flutter app",
+        "Backend services, product and order flows",
+        "Service workflows and payment integration"
+      ],
+      "flow": [
+        { "label": "Flutter app", "detail": "iOS · Android", "mine": true },
+        {
+          "label": "Backend services",
+          "detail": "Node.js · Firebase",
+          "mine": true
+        },
+        {
+          "label": "Product, order & service flows",
+          "detail": "TypeScript",
+          "mine": true
+        },
+        { "label": "Stripe", "detail": "payments", "mine": false }
+      ]
     },
     {
       "kind": "engineering",
@@ -133,11 +168,17 @@
       "name": "Relay Pulse",
       "href": "https://github.com/mortezaom/relay-pulse",
       "description": "An uptime-monitoring platform for HTTP, HTTPS, and TCP services, designed for simple deployment on Cloudflare Workers.",
-      "ownership": null,
       "role": null,
       "status": "In active development",
       "linkLabel": "View source",
-      "technologies": ["TypeScript", "Next.js", "Cloudflare Workers", "Drizzle"]
+      "technologies": [
+        "TypeScript",
+        "Next.js",
+        "Cloudflare Workers",
+        "Drizzle"
+      ],
+      "built": [],
+      "flow": []
     },
     {
       "kind": "archive",
@@ -145,11 +186,12 @@
       "name": "Paper",
       "href": "https://github.com/mortezaom",
       "description": null,
-      "ownership": null,
       "role": null,
       "status": null,
       "linkLabel": "Open Paper",
-      "technologies": ["Flutter", "Firebase", "Vue 2"]
+      "technologies": ["Flutter", "Firebase", "Vue 2"],
+      "built": [],
+      "flow": []
     },
     {
       "kind": "archive",
@@ -157,11 +199,12 @@
       "name": "Farsian",
       "href": null,
       "description": null,
-      "ownership": null,
       "role": null,
       "status": null,
       "linkLabel": null,
-      "technologies": ["Flutter"]
+      "technologies": ["Flutter"],
+      "built": [],
+      "flow": []
     }
   ],
   "experience": [
@@ -171,7 +214,8 @@
       "period": "Jan 2026 — Present",
       "startDate": "2026-01",
       "description": "Leading development across the Flutter app, backend services, product and order flows, service workflows, and payment systems.",
-      "stack": ["Flutter", "TypeScript", "Node.js", "Firebase", "Stripe"]
+      "stack": ["Flutter", "TypeScript", "Node.js", "Firebase", "Stripe"],
+      "project": "Pedal24"
     },
     {
       "role": "Lead Developer",
@@ -187,7 +231,8 @@
         "React",
         "Stripe",
         "Flutter"
-      ]
+      ],
+      "project": "Bilit.Events"
     },
     {
       "role": "Application Developer",
@@ -195,7 +240,8 @@
       "period": "Mar 2022 — Oct 2024",
       "startDate": "2022-03",
       "description": "Built and released web and mobile products for clients in a fully remote team using Flutter, Firebase, Vue, and Node.js.",
-      "stack": ["Flutter", "Firebase", "Vue", "Node.js"]
+      "stack": ["Flutter", "Firebase", "Vue", "Node.js"],
+      "project": null
     },
     {
       "role": "Web & Mobile Developer",
@@ -203,7 +249,8 @@
       "period": "Mar 2020 — Feb 2022",
       "startDate": "2020-03",
       "description": "Delivered Vue web interfaces and Flutter and Kotlin mobile applications from design handoff through production release.",
-      "stack": ["Flutter", "Vue", "Kotlin"]
+      "stack": ["Flutter", "Vue", "Kotlin"],
+      "project": null
     }
   ],
   "skillGroups": [

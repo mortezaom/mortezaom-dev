@@ -22,8 +22,7 @@ export const profile = sqliteTable('profile', {
   heroName: text('hero_name').notNull(),
   heroRole: text('hero_role').notNull(),
   heroTagline: text('hero_tagline').notNull(),
-  heroCardTitle: text('hero_card_title').notNull(),
-  heroCardCopy: text('hero_card_copy').notNull(),
+  availability: text('availability'),
   aboutParagraphs: text('about_paragraphs').notNull(),
   portraitAlt: text('portrait_alt').notNull(),
   contactHeading: text('contact_heading').notNull(),
@@ -82,11 +81,13 @@ export const projects = sqliteTable('projects', {
   name: text('name').notNull(),
   href: text('href'),
   description: text('description'),
-  ownership: text('ownership'),
   role: text('role'),
   status: text('status'),
   linkLabel: text('link_label'),
   technologies: text('technologies').notNull().default('[]'),
+  built: text('built').notNull().default('[]'),
+  /** JSON FlowNode[]: the product's parts, in order. */
+  flow: text('flow').notNull().default('[]'),
   sortOrder: integer('sort_order').notNull().default(0),
 });
 
@@ -98,6 +99,8 @@ export const experience = sqliteTable('experience', {
   startDate: text('start_date').notNull(),
   description: text('description').notNull(),
   stack: text('stack').notNull().default('[]'),
+  /** Project name; links the row to its Work card instead of repeating it. */
+  project: text('project'),
   sortOrder: integer('sort_order').notNull().default(0),
 });
 

@@ -48,6 +48,7 @@ function ProfilePage() {
             ...profile,
             heroName: [...heroName],
             aboutParagraphs: [...paragraphs],
+            availability: profile.availability || null,
           },
           about: {
             eyebrow: about.eyebrow || null,
@@ -66,7 +67,7 @@ function ProfilePage() {
           Profile
         </h1>
         <p className="text-muted-foreground text-xs leading-relaxed">
-          Hero, about, contact, stats.
+          Hero, work-across strip, about, contact.
         </p>
       </div>
 
@@ -103,22 +104,12 @@ function ProfilePage() {
                 onChange={(e) => patchProfile('heroTagline', e.target.value)}
               />
             </Field>
-            <div className="gap-4 grid sm:grid-cols-2">
-              <Field label="Hero card title">
-                <Input
-                  value={profile.heroCardTitle}
-                  onChange={(e) =>
-                    patchProfile('heroCardTitle', e.target.value)
-                  }
-                />
-              </Field>
-              <Field label="Hero card copy">
-                <Input
-                  value={profile.heroCardCopy}
-                  onChange={(e) => patchProfile('heroCardCopy', e.target.value)}
-                />
-              </Field>
-            </div>
+            <Field label="Availability" hint="Optional line under the tagline.">
+              <Input
+                value={profile.availability ?? ''}
+                onChange={(e) => patchProfile('availability', e.target.value)}
+              />
+            </Field>
             <Field
               label="CV path"
               hint="File in public/, e.g. /Morteza-Omar-Mohammadi-CV.pdf"
@@ -138,14 +129,24 @@ function ProfilePage() {
         </CardHeader>
         <CardContent>
           <div className="gap-4 grid">
-            <Field label="Section title">
-              <Input
-                value={about.title}
-                onChange={(e) =>
-                  setAbout((a) => ({ ...a, title: e.target.value }))
-                }
-              />
-            </Field>
+            <div className="gap-4 grid sm:grid-cols-2">
+              <Field label="Section label" hint="Match the nav item.">
+                <Input
+                  value={about.eyebrow}
+                  onChange={(e) =>
+                    setAbout((a) => ({ ...a, eyebrow: e.target.value }))
+                  }
+                />
+              </Field>
+              <Field label="Section title">
+                <Input
+                  value={about.title}
+                  onChange={(e) =>
+                    setAbout((a) => ({ ...a, title: e.target.value }))
+                  }
+                />
+              </Field>
+            </div>
             {paragraphs.map((p, i) => (
               <div key={i} className="flex items-start gap-2">
                 <Textarea
@@ -192,15 +193,15 @@ function ProfilePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Stats (hero card)</CardTitle>
+          <CardTitle>Work across (hero strip)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
             {stats.map((s, i) => (
               <div key={i} className="flex items-center gap-2">
                 <Input
-                  placeholder="Value"
-                  aria-label="Value"
+                  placeholder="Area"
+                  aria-label="Area"
                   value={s.value}
                   onChange={(e) =>
                     setStats((list) =>
@@ -212,8 +213,8 @@ function ProfilePage() {
                 />
                 <Input
                   className="flex-2"
-                  placeholder="Label"
-                  aria-label="Label"
+                  placeholder="One line"
+                  aria-label="One line"
                   value={s.label}
                   onChange={(e) =>
                     setStats((list) =>
@@ -283,7 +284,7 @@ function ProfilePage() {
               ])
             }
           >
-            + Add stat
+            + Add area
           </Button>
         </CardContent>
       </Card>

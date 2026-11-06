@@ -20,7 +20,7 @@ import {
   SaveBar,
   type SaveState,
 } from '../../components/admin-form';
-import type { ProjectItem } from '../../lib/content';
+import type { FlowNode, ProjectItem } from '../../lib/content';
 import { saveWorkFn } from '../../server/admin';
 import { getContentFn } from '../../server/content';
 
@@ -38,12 +38,32 @@ const BLANK: EditableProject = {
   name: '',
   href: '',
   description: '',
-  ownership: '',
   role: '',
   status: '',
   linkLabel: '',
   technologies: [],
+  built: [],
+  flow: [],
 };
+
+// One node per line: "Label | detail | ext" (ext = integrated, not mine).
+const flowToText = (flow: FlowNode[]) =>
+  flow
+    .map((n) =>
+      [n.label, n.detail ?? '', n.mine ? '' : 'ext']
+        .join(' | ')
+        .replace(/( \| )+$/, ''),
+    )
+    .join('\n');
+const textToFlow = (text: string): FlowNode[] =>
+  text.split('\n').flatMap((line) => {
+    const [label = '', detail = '', flag = ''] = line
+      .split('|')
+      .map((x) => x.trim());
+    return label
+      ? [{ label, detail: detail || null, mine: flag !== 'ext' }]
+      : [];
+  });
 
 function SectionFields(props: {
   title: string;
@@ -58,7 +78,7 @@ function SectionFields(props: {
       <CardContent>
         <div className="gap-4 grid">
           <div className="gap-4 grid sm:grid-cols-2">
-            <Field label="Eyebrow">
+            <Field label="Section label" hint="Match the nav item.">
               <Input
                 value={props.value.eyebrow}
                 onChange={(e) => props.onInput('eyebrow', e.target.value)}
@@ -90,12 +110,14 @@ function ProjectCard(props: {
   onInput: (
     index: number,
     field: keyof EditableProject,
-    value: string | string[],
+    value: string | string[] | FlowNode[],
   ) => void;
   onRemove: (index: number) => void;
   onMove: (index: number, dir: -1 | 1) => void;
 }) {
   const p = props.project;
+  // Draft text so separators survive while typing.
+  const [flowText, setFlowText] = useState(() => flowToText(p.flow));
   return (
     <Card>
       <CardContent className="pt-6">
@@ -174,7 +196,7 @@ function ProjectCard(props: {
               />
             </Field>
           </div>
-          <Field label="Description">
+          <Field label="Description" hint="One line on what the product is.">
             <Textarea
               rows={2}
               value={p.description ?? ''}
@@ -183,22 +205,43 @@ function ProjectCard(props: {
               }
             />
           </Field>
+          <Field label="Role line (spotlight)">
+            <Input
+              value={p.role ?? ''}
+              onChange={(e) =>
+                props.onInput(props.index, 'role', e.target.value)
+              }
+            />
+          </Field>
           <div className="gap-3 grid sm:grid-cols-2">
-            <Field label="Ownership (spotlight)">
+            <Field label="What I built (spotlight, one per line)">
               <Textarea
-                rows={2}
-                value={p.ownership ?? ''}
+                rows={4}
+                value={p.built.join('\n')}
                 onChange={(e) =>
-                  props.onInput(props.index, 'ownership', e.target.value)
+                  props.onInput(
+                    props.index,
+                    'built',
+                    e.target.value.split('\n'),
+                  )
                 }
               />
             </Field>
-            <Field label="Role line (spotlight)">
-              <Input
-                value={p.role ?? ''}
-                onChange={(e) =>
-                  props.onInput(props.index, 'role', e.target.value)
-                }
+            <Field
+              label="System map (spotlight)"
+              hint="One part per line: Label | detail | ext. Add ext for services you integrated."
+            >
+              <Textarea
+                rows={4}
+                value={flowText}
+                onChange={(e) => {
+                  setFlowText(e.target.value);
+                  props.onInput(
+                    props.index,
+                    'flow',
+                    textToFlow(e.target.value),
+                  );
+                }}
               />
             </Field>
           </div>
@@ -250,7 +293,6 @@ function WorkPage() {
   });
   const [spotlight, setSpotlight] = useState(sec('workSpotlight'));
   const [engineering, setEngineering] = useState(sec('workEngineering'));
-  const [archive, setArchive] = useState(sec('workArchive'));
   const [projects, setProjects] = useState<EditableProject[]>(
     data.projects.map(({ id: _id, sortOrder: _o, ...rest }) => ({
       ...rest,
@@ -275,11 +317,6 @@ function WorkPage() {
               title: engineering.title,
               copy: nul(engineering.copy),
             },
-            workArchive: {
-              eyebrow: nul(archive.eyebrow),
-              title: archive.title,
-              copy: nul(archive.copy),
-            },
           },
           projects: projects.map((p) => ({
             kind: p.kind,
@@ -287,11 +324,12 @@ function WorkPage() {
             name: p.name,
             href: nul(p.href ?? ''),
             description: nul(p.description ?? ''),
-            ownership: nul(p.ownership ?? ''),
             role: nul(p.role ?? ''),
             status: nul(p.status ?? ''),
             linkLabel: nul(p.linkLabel ?? ''),
             technologies: [...p.technologies],
+            built: p.built.map((b) => b.trim()).filter(Boolean),
+            flow: p.flow,
           })),
         },
       });
@@ -300,7 +338,7 @@ function WorkPage() {
   const onInput = (
     index: number,
     field: keyof EditableProject,
-    value: string | string[],
+    value: string | string[] | FlowNode[],
   ) => {
     setProjects((list) =>
       list.map((p, j) => (j === index ? { ...p, [field]: value } : p)),
@@ -346,19 +384,14 @@ function WorkPage() {
       </div>
 
       <SectionFields
-        title="Spotlight header"
+        title="Work header (spotlight projects)"
         value={spotlight}
         onInput={(f, v) => setSpotlight((s) => ({ ...s, [f]: v }))}
       />
       <SectionFields
-        title="Engineering header"
+        title="Built header (engineering + archive projects)"
         value={engineering}
         onInput={(f, v) => setEngineering((s) => ({ ...s, [f]: v }))}
-      />
-      <SectionFields
-        title="Archive header"
-        value={archive}
-        onInput={(f, v) => setArchive((s) => ({ ...s, [f]: v }))}
       />
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Kind)}>
@@ -399,7 +432,7 @@ function WorkPage() {
         onClick={() =>
           setProjects((list) => [
             ...list,
-            { ...BLANK, kind: tab, technologies: [] },
+            { ...BLANK, kind: tab, technologies: [], built: [], flow: [] },
           ])
         }
       >

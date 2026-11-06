@@ -22,8 +22,7 @@ export interface ProfileContent {
   heroName: string[];
   heroRole: string;
   heroTagline: string;
-  heroCardTitle: string;
-  heroCardCopy: string;
+  availability: string | null;
   aboutParagraphs: string[];
   portraitAlt: string;
   contactHeading: string;
@@ -55,6 +54,13 @@ export interface StatItem {
   sortOrder: number;
 }
 
+/** One part of a product's system map; mine = built by me, else integrated. */
+export interface FlowNode {
+  label: string;
+  detail: string | null;
+  mine: boolean;
+}
+
 export interface ProjectItem {
   id: number;
   kind: string;
@@ -62,11 +68,12 @@ export interface ProjectItem {
   name: string;
   href: string | null;
   description: string | null;
-  ownership: string | null;
   role: string | null;
   status: string | null;
   linkLabel: string | null;
   technologies: string[];
+  built: string[];
+  flow: FlowNode[];
   sortOrder: number;
 }
 
@@ -78,6 +85,7 @@ export interface ExperienceItem {
   startDate: string;
   description: string;
   stack: string[];
+  project: string | null;
   sortOrder: number;
 }
 
@@ -110,6 +118,27 @@ const parseList = (raw: string | null): string[] => {
     return Array.isArray(v)
       ? v.filter((x): x is string => typeof x === 'string')
       : [];
+  } catch {
+    return [];
+  }
+};
+
+export const parseFlow = (raw: string | null): FlowNode[] => {
+  if (!raw) return [];
+  try {
+    const v: unknown = JSON.parse(raw);
+    if (!Array.isArray(v)) return [];
+    return v.flatMap((n: Record<string, unknown>) =>
+      n && typeof n.label === 'string'
+        ? [
+            {
+              label: n.label,
+              detail: typeof n.detail === 'string' ? n.detail : null,
+              mine: n.mine !== false,
+            },
+          ]
+        : [],
+    );
   } catch {
     return [];
   }
@@ -206,8 +235,7 @@ export async function getPublicContent(): Promise<PublicContent> {
       heroName: parseList(profile.heroName),
       heroRole: profile.heroRole,
       heroTagline: profile.heroTagline,
-      heroCardTitle: profile.heroCardTitle,
-      heroCardCopy: profile.heroCardCopy,
+      availability: profile.availability ?? null,
       aboutParagraphs: parseList(profile.aboutParagraphs),
       portraitAlt: profile.portraitAlt,
       contactHeading: profile.contactHeading,
@@ -227,6 +255,8 @@ export async function getPublicContent(): Promise<PublicContent> {
     projects: projectRows.map((p) => ({
       ...p,
       technologies: parseList(p.technologies),
+      built: parseList(p.built),
+      flow: parseFlow(p.flow),
     })),
     experience: expRows.map((e) => ({ ...e, stack: parseList(e.stack) })),
     skillGroups: skillRows.map((g) => ({
@@ -297,7 +327,10 @@ export async function getSeedContent(): Promise<
   };
   return {
     site: { trackingSnippet: null, ...seed.site },
-    profile: seed.profile,
+    profile: {
+      ...seed.profile,
+      availability: seed.profile.availability ?? null,
+    },
     sections: Object.fromEntries((seed.sections ?? []).map((s) => [s.key, s])),
     navLinks: withIds(seed.navLinks ?? []),
     quickLinks: withIds(seed.quickLinks ?? []),

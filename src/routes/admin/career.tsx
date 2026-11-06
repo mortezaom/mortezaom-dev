@@ -60,7 +60,11 @@ function CareerPage() {
               copy: nul(skillSec.copy),
             },
           },
-          experience: exp.map((e) => ({ ...e, stack: [...e.stack] })),
+          experience: exp.map((e) => ({
+            ...e,
+            stack: [...e.stack],
+            project: nul(e.project ?? ''),
+          })),
           skillGroups: groups.map((g) => ({
             ...g,
             technologies: [...g.technologies],
@@ -74,24 +78,34 @@ function CareerPage() {
       <div>
         <h1 className="font-semibold text-[22px] tracking-[-0.03em]">Career</h1>
         <p className="text-muted-foreground text-xs leading-relaxed">
-          Experience timeline + skill groups.
+          Career rows + toolbox.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Experience header</CardTitle>
+          <CardTitle>Career header</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="gap-4 grid">
-            <Field label="Title">
-              <Input
-                value={expSec.title}
-                onChange={(e) =>
-                  setExpSec((s) => ({ ...s, title: e.target.value }))
-                }
-              />
-            </Field>
+            <div className="gap-4 grid sm:grid-cols-2">
+              <Field label="Section label" hint="Match the nav item.">
+                <Input
+                  value={expSec.eyebrow}
+                  onChange={(e) =>
+                    setExpSec((s) => ({ ...s, eyebrow: e.target.value }))
+                  }
+                />
+              </Field>
+              <Field label="Title">
+                <Input
+                  value={expSec.title}
+                  onChange={(e) =>
+                    setExpSec((s) => ({ ...s, title: e.target.value }))
+                  }
+                />
+              </Field>
+            </div>
             <Field label="Copy">
               <Textarea
                 rows={2}
@@ -223,6 +237,21 @@ function CareerPage() {
                     }
                   />
                 </Field>
+                <Field
+                  label="Linked project"
+                  hint="Project name. Shows a link to its Work card instead of the description."
+                >
+                  <Input
+                    value={e.project ?? ''}
+                    onChange={(ev) =>
+                      setExp((list) =>
+                        list.map((x, j) =>
+                          j === i ? { ...x, project: ev.target.value } : x,
+                        ),
+                      )
+                    }
+                  />
+                </Field>
                 <Field label="Stack (comma separated)">
                   <Input
                     value={e.stack.join(', ')}
@@ -263,6 +292,7 @@ function CareerPage() {
               startDate: '',
               description: '',
               stack: [],
+              project: null,
             },
           ])
         }
@@ -272,10 +302,10 @@ function CareerPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Skills header</CardTitle>
+          <CardTitle>Toolbox</CardTitle>
         </CardHeader>
         <CardContent>
-          <Field label="Title (supports line breaks as written)">
+          <Field label="Row label">
             <Textarea
               rows={2}
               value={skillSec.title}

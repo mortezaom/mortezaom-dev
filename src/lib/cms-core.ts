@@ -132,6 +132,27 @@ const list = (v: unknown): string =>
           .slice(0, 100)
       : [],
   );
+/** System-map nodes → JSON. Drops malformed nodes, caps sizes. */
+export const flowJson = (v: unknown): string =>
+  JSON.stringify(
+    (Array.isArray(v) ? v : [])
+      .filter(
+        (n): n is Record<string, unknown> =>
+          !!n &&
+          typeof n.label === 'string' &&
+          n.label.length > 0 &&
+          n.label.length <= 200,
+      )
+      .slice(0, 20)
+      .map((n) => ({
+        label: n.label,
+        detail:
+          typeof n.detail === 'string' && n.detail
+            ? n.detail.slice(0, 200)
+            : null,
+        mine: n.mine !== false,
+      })),
+  );
 const arr = (v: unknown, what: string): Record<string, unknown>[] => {
   if (!Array.isArray(v))
     throw new Error(`Invalid content: ${what} must be an array`);
@@ -168,11 +189,12 @@ export function validateSeed(input: unknown): ValidatedSeed {
       name: req(p.name, 'projects[].name'),
       href: optHref(p.href, 'projects[].href'),
       description: str(p.description) ?? null,
-      ownership: str(p.ownership) ?? null,
       role: str(p.role) ?? null,
       status: str(p.status) ?? null,
       linkLabel: str(p.linkLabel) ?? null,
       technologies: list(p.technologies),
+      built: list(p.built),
+      flow: flowJson(p.flow),
       sortOrder: i,
     };
   });
@@ -210,8 +232,7 @@ export function validateSeed(input: unknown): ValidatedSeed {
       heroName: list(profile.heroName),
       heroRole: req(profile.heroRole, 'profile.heroRole'),
       heroTagline: req(profile.heroTagline, 'profile.heroTagline'),
-      heroCardTitle: req(profile.heroCardTitle, 'profile.heroCardTitle'),
-      heroCardCopy: req(profile.heroCardCopy, 'profile.heroCardCopy'),
+      availability: str(profile.availability) || null,
       aboutParagraphs: list(profile.aboutParagraphs),
       portraitAlt: req(profile.portraitAlt, 'profile.portraitAlt'),
       contactHeading: req(profile.contactHeading, 'profile.contactHeading'),
@@ -252,6 +273,7 @@ export function validateSeed(input: unknown): ValidatedSeed {
       startDate: req(e.startDate, 'experience[].startDate'),
       description: req(e.description, 'experience[].description'),
       stack: list(e.stack),
+      project: str(e.project) || null,
       sortOrder: i,
     })),
     skillRows: skills.map((g, i) => ({
@@ -406,8 +428,7 @@ export async function exportSeedObject() {
       heroName: J(p.heroName),
       heroRole: p.heroRole,
       heroTagline: p.heroTagline,
-      heroCardTitle: p.heroCardTitle,
-      heroCardCopy: p.heroCardCopy,
+      availability: p.availability,
       aboutParagraphs: J(p.aboutParagraphs),
       portraitAlt: p.portraitAlt,
       contactHeading: p.contactHeading,
@@ -434,11 +455,12 @@ export async function exportSeedObject() {
       name: x.name,
       href: x.href,
       description: x.description,
-      ownership: x.ownership,
       role: x.role,
       status: x.status,
       linkLabel: x.linkLabel,
       technologies: J(x.technologies),
+      built: J(x.built),
+      flow: J(x.flow),
     })),
     experience: exp.map((x) => ({
       role: x.role,
@@ -447,6 +469,7 @@ export async function exportSeedObject() {
       startDate: x.startDate,
       description: x.description,
       stack: J(x.stack),
+      project: x.project,
     })),
     skillGroups: skills.map((x) => ({
       name: x.name,
