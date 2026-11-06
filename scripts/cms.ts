@@ -1,7 +1,8 @@
 // oxlint-disable-next-line import/no-unassigned-import -- dotenv side-effect import loads .env
 import 'dotenv/config';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { existsSync } from 'node:fs';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { basename, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { migrate } from 'drizzle-orm/tursodatabase/migrator';
 import { getDb } from '../src/lib/db/client';
@@ -33,7 +34,7 @@ function flag(name: string): boolean {
 
 async function main() {
   const [cmd] = process.argv.slice(2);
-  if (cmd === 'import') {
+  if (cmd === 'import' || cmd === 'reset') {
     const file = arg('--file') ?? DEFAULT_JSON;
     const json = JSON.parse(await readFile(file, 'utf8')) as unknown;
     const validated = validateSeed(json);
@@ -41,6 +42,22 @@ async function main() {
       console.log(`Dry run OK: ${file}`);
       console.table(validated.counts);
       return;
+    }
+    if (cmd === 'reset') {
+      if (!flag('--yes')) {
+        console.log(
+          'reset moves the current database into data/backup-<time>/ and rebuilds it from the JSON (contact messages stay in the backup). Stop the app, then re-run with --yes.',
+        );
+        process.exit(1);
+      }
+      // Move, never delete: the old DB (and its inbox) stays recoverable.
+      const backup = resolve(dirname(dbFile()), `backup-${Date.now()}`);
+      await mkdir(backup, { recursive: true });
+      for (const suffix of ['', '-wal', '-shm']) {
+        const src = dbFile() + suffix;
+        if (existsSync(src)) await rename(src, resolve(backup, basename(src)));
+      }
+      console.log(`Previous database moved to ${backup}`);
     }
     await mkdir(dirname(dbFile()), { recursive: true });
     await migrate(getDb(), { migrationsFolder: MIGRATIONS_FOLDER });
@@ -77,7 +94,7 @@ async function main() {
     console.log(await hashPassword(pw));
   } else {
     console.log(
-      'Usage: cms <import|export|migrate|hash-password> [--file <path>] [--dry-run]',
+      'Usage: cms <import|reset|export|migrate|hash-password> [--file <path>] [--dry-run] [--yes]',
     );
     process.exit(1);
   }

@@ -13,6 +13,7 @@
     "db:push": "drizzle-kit push --force",
     "db:studio": "drizzle-kit studio",
     "cms:import": "tsx scripts/cms.ts import",
+    "cms:reset": "tsx scripts/cms.ts reset",
     "cms:export": "tsx scripts/cms.ts export",
     "cms:hash-password": "tsx scripts/cms.ts hash-password",
     "format": "oxfmt",

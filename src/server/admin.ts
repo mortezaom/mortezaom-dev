@@ -342,7 +342,6 @@ interface ProjectIn {
   role: unknown;
   status: unknown;
   linkLabel: unknown;
-  technologies: unknown;
   built: unknown;
   flow: unknown;
 }
@@ -362,7 +361,6 @@ const projectRow = (p: ProjectIn) => {
     role: opt(p.role) ?? null,
     status: opt(p.status) ?? null,
     linkLabel: opt(p.linkLabel) ?? null,
-    technologies: JSON.stringify(strList(p.technologies)),
     built: JSON.stringify(strList(p.built)),
     flow: flowJson(p.flow),
     sortOrder: 0,
@@ -425,7 +423,6 @@ export const saveCareerFn = createServerFn({ method: 'POST' })
       period: req(e.period, 'experience[].period'),
       startDate: req(e.startDate, 'experience[].startDate'),
       description: req(e.description, 'experience[].description'),
-      stack: JSON.stringify(strList(e.stack)),
       project: opt(e.project) || null,
       sortOrder: i,
     }));

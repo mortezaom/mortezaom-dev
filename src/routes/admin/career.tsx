@@ -32,7 +32,6 @@ function CareerPage() {
   const [exp, setExp] = useState(
     data.experience.map(({ id: _id, sortOrder: _o, ...rest }) => ({
       ...rest,
-      stack: [...rest.stack],
     })),
   );
   const [groups, setGroups] = useState(
@@ -62,7 +61,6 @@ function CareerPage() {
           },
           experience: exp.map((e) => ({
             ...e,
-            stack: [...e.stack],
             project: nul(e.project ?? ''),
           })),
           skillGroups: groups.map((g) => ({
@@ -147,7 +145,7 @@ function CareerPage() {
                     onClick={() =>
                       setExp((list) =>
                         move(
-                          list.map((x) => ({ ...x, stack: [...x.stack] })),
+                          list.map((x) => ({ ...x })),
                           i,
                           -1,
                         ),
@@ -164,7 +162,7 @@ function CareerPage() {
                     onClick={() =>
                       setExp((list) =>
                         move(
-                          list.map((x) => ({ ...x, stack: [...x.stack] })),
+                          list.map((x) => ({ ...x })),
                           i,
                           1,
                         ),
@@ -253,26 +251,6 @@ function CareerPage() {
                     }
                   />
                 </Field>
-                <Field label="Stack (comma separated)">
-                  <Input
-                    value={e.stack.join(', ')}
-                    onChange={(ev) =>
-                      setExp((list) =>
-                        list.map((x, j) =>
-                          j === i
-                            ? {
-                                ...x,
-                                stack: ev.target.value
-                                  .split(',')
-                                  .map((t) => t.trim())
-                                  .filter(Boolean),
-                              }
-                            : x,
-                        ),
-                      )
-                    }
-                  />
-                </Field>
               </div>
             </CardContent>
           </Card>
@@ -292,7 +270,6 @@ function CareerPage() {
               period: '',
               startDate: '',
               description: '',
-              stack: [],
               project: null,
             },
           ])

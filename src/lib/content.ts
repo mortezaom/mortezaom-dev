@@ -71,7 +71,6 @@ export interface ProjectItem {
   role: string | null;
   status: string | null;
   linkLabel: string | null;
-  technologies: string[];
   built: string[];
   flow: FlowNode[];
   sortOrder: number;
@@ -84,7 +83,6 @@ export interface ExperienceItem {
   period: string;
   startDate: string;
   description: string;
-  stack: string[];
   project: string | null;
   sortOrder: number;
 }
@@ -254,11 +252,10 @@ export async function getPublicContent(): Promise<PublicContent> {
     stats: statRows,
     projects: projectRows.map((p) => ({
       ...p,
-      technologies: parseList(p.technologies),
       built: parseList(p.built),
       flow: parseFlow(p.flow),
     })),
-    experience: expRows.map((e) => ({ ...e, stack: parseList(e.stack) })),
+    experience: expRows,
     skillGroups: skillRows.map((g) => ({
       ...g,
       technologies: parseList(g.technologies),

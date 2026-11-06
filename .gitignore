@@ -14,3 +14,4 @@ data/*.db-shm
 .output
 .vinxi
 __unconfig*
+data/backup-*/

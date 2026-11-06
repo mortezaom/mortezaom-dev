@@ -118,15 +118,6 @@
       "role": "Lead Developer · November 2024 — Present",
       "status": null,
       "linkLabel": "Visit Bilit.Events",
-      "technologies": [
-        "TypeScript",
-        "Node.js",
-        "React",
-        "Flutter",
-        "MongoDB",
-        "Redis",
-        "Stripe"
-      ],
       "built": [
         "Order and inventory services, including seat management",
         "Card payment flows and automated ticket delivery",
@@ -161,13 +152,6 @@
       "role": "Lead Developer · January 2026 — Present",
       "status": null,
       "linkLabel": "Visit Pedal24",
-      "technologies": [
-        "Flutter",
-        "TypeScript",
-        "Node.js",
-        "Firebase",
-        "Stripe"
-      ],
       "built": [
         "The cross-platform mobile app",
         "Backend services for listings and orders",
@@ -197,12 +181,6 @@
       "role": null,
       "status": "In active development",
       "linkLabel": "View source",
-      "technologies": [
-        "TypeScript",
-        "Next.js",
-        "Cloudflare Workers",
-        "Drizzle"
-      ],
       "built": [],
       "flow": []
     },
@@ -215,7 +193,6 @@
       "role": null,
       "status": null,
       "linkLabel": null,
-      "technologies": ["Flutter", "Firebase", "Vue 2"],
       "built": [],
       "flow": []
     },
@@ -228,7 +205,6 @@
       "role": null,
       "status": null,
       "linkLabel": null,
-      "technologies": ["Flutter"],
       "built": [],
       "flow": []
     }
@@ -240,7 +216,6 @@
       "period": "Jan 2026 — Present",
       "startDate": "2026-01",
       "description": "Leading development across the Flutter app, backend services, product and order flows, service workflows, and payment systems.",
-      "stack": ["Flutter", "TypeScript", "Node.js", "Firebase", "Stripe"],
       "project": "Pedal24"
     },
     {
@@ -249,15 +224,6 @@
       "period": "Nov 2024 — Present",
       "startDate": "2024-11",
       "description": "Leading engineering across ticketing services, payments, background processing, the customer web application, and the Flutter scanner app.",
-      "stack": [
-        "Node.js",
-        "MongoDB",
-        "Redis",
-        "BullMQ",
-        "React",
-        "Stripe",
-        "Flutter"
-      ],
       "project": "Bilit.Events"
     },
     {
@@ -266,7 +232,6 @@
       "period": "Mar 2022 — Oct 2024",
       "startDate": "2022-03",
       "description": "Built and released web and mobile products for clients in a fully remote team.",
-      "stack": ["Flutter", "Firebase", "Vue", "Node.js"],
       "project": null
     },
     {
@@ -275,7 +240,6 @@
       "period": "Mar 2020 — Feb 2022",
       "startDate": "2020-03",
       "description": "Delivered web interfaces and mobile apps from design handoff through production release.",
-      "stack": ["Flutter", "Vue", "Kotlin"],
       "project": null
     }
   ],

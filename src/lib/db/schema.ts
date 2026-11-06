@@ -84,7 +84,6 @@ export const projects = sqliteTable('projects', {
   role: text('role'),
   status: text('status'),
   linkLabel: text('link_label'),
-  technologies: text('technologies').notNull().default('[]'),
   built: text('built').notNull().default('[]'),
   /** JSON FlowNode[]: the product's parts, in order. */
   flow: text('flow').notNull().default('[]'),
@@ -98,7 +97,6 @@ export const experience = sqliteTable('experience', {
   period: text('period').notNull(),
   startDate: text('start_date').notNull(),
   description: text('description').notNull(),
-  stack: text('stack').notNull().default('[]'),
   /** Project name; links the row to its Work card instead of repeating it. */
   project: text('project'),
   sortOrder: integer('sort_order').notNull().default(0),

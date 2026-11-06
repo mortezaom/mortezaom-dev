@@ -41,7 +41,6 @@ const BLANK: EditableProject = {
   role: '',
   status: '',
   linkLabel: '',
-  technologies: [],
   built: [],
   flow: [],
 };
@@ -263,21 +262,6 @@ function ProjectCard(props: {
               />
             </Field>
           </div>
-          <Field label="Technologies (comma separated)">
-            <Input
-              value={p.technologies.join(', ')}
-              onChange={(e) =>
-                props.onInput(
-                  props.index,
-                  'technologies',
-                  e.target.value
-                    .split(',')
-                    .map((t) => t.trim())
-                    .filter(Boolean),
-                )
-              }
-            />
-          </Field>
         </div>
       </CardContent>
     </Card>
@@ -327,7 +311,6 @@ function WorkPage() {
             role: nul(p.role ?? ''),
             status: nul(p.status ?? ''),
             linkLabel: nul(p.linkLabel ?? ''),
-            technologies: [...p.technologies],
             built: p.built.map((b) => b.trim()).filter(Boolean),
             flow: p.flow,
           })),
@@ -355,10 +338,7 @@ function WorkPage() {
       const pos = order.indexOf(index);
       const other = order[pos + dir];
       if (pos < 0 || other === undefined) return list;
-      const next = list.map((p) => ({
-        ...p,
-        technologies: [...p.technologies],
-      }));
+      const next = [...list];
       const a = next[index];
       const b = next[other];
       if (!a || !b) return list;
@@ -432,7 +412,7 @@ function WorkPage() {
         onClick={() =>
           setProjects((list) => [
             ...list,
-            { ...BLANK, kind: tab, technologies: [], built: [], flow: [] },
+            { ...BLANK, kind: tab, built: [], flow: [] },
           ])
         }
       >

@@ -31,6 +31,7 @@ Required env (`DB_FILE_NAME`, `SITE_URL`, `ADMIN_USERNAME`,
 
 ```bash
 pnpm cms:import [--file <path>] [--dry-run]  # validate + replace-all content
+pnpm cms:reset --yes [--file <path>]         # fresh DB from JSON; old DB moved to data/backup-<time>/
 pnpm cms:export [--file <path>]              # dump DB -> JSON (byte-stable)
 pnpm cms:hash-password [--password <pw>]     # scrypt salt:key hash
 pnpm db:migrate                              # apply drizzle/ migrations
