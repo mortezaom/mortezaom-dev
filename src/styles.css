@@ -600,7 +600,8 @@ html:has(.intro-loader)::-webkit-scrollbar-thumb {
 }
 
 /* No-JS fallback: never trap the page behind the loader. */
-html:not(.js) .intro-loader {
+html:not(.js) .intro-loader,
+html.intro-seen .intro-loader {
   display: none;
 }
 /*---break---*/

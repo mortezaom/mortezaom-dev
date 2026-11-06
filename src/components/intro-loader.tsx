@@ -48,12 +48,20 @@ export function IntroLoader(props: {
 
     const finish = () => {
       document.documentElement.classList.remove('intro-active');
+      try {
+        sessionStorage.setItem('intro-seen', '1');
+      } catch {
+        // Storage blocked: intro just plays again next load.
+      }
       propsRef.current.onComplete();
     };
 
     document.documentElement.classList.add('intro-active');
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (
+      document.documentElement.classList.contains('intro-seen') ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
       finish();
       return;
     }

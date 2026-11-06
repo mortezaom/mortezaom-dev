@@ -12,8 +12,9 @@ import { SiteNotFound } from '../components/site-not-found';
 import { getTrackingSnippetFn } from '../server/content';
 import styleCss from '../styles.css?url';
 
+// intro-seen hides the SSR'd loader before first paint on repeat visits.
 const JS_FLAG =
-  "document.documentElement.classList.add('js');history.scrollRestoration='manual';scrollTo(0,0)";
+  "document.documentElement.classList.add('js');try{if(sessionStorage.getItem('intro-seen'))document.documentElement.classList.add('intro-seen')}catch(e){}history.scrollRestoration='manual';scrollTo(0,0)";
 
 export const Route = createRootRoute({
   head: ({ matches }) => {
