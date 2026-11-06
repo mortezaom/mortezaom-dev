@@ -28,22 +28,27 @@
     {
       "key": "workSpotlight",
       "eyebrow": "Work",
-      "title": "Products I lead",
-      "copy": "Production products where I own the engineering. Filled boxes are the parts I built."
+      "title": "Work that defines what I do now.",
+      "copy": "Production products where I own major parts of the engineering. Filled boxes in each map are the parts I built."
     },
     {
       "key": "workEngineering",
       "eyebrow": "Built",
-      "title": "Open source and earlier work",
+      "title": "Open source and earlier work.",
       "copy": null
     },
     {
       "key": "experience",
       "eyebrow": "Career",
-      "title": "Where I have worked",
+      "title": "Experience",
+      "copy": "From web and mobile development to leading complete product builds across backend, web, mobile, and payments."
+    },
+    {
+      "key": "skills",
+      "eyebrow": null,
+      "title": "Tools I use to\nbuild and ship",
       "copy": null
     },
-    { "key": "skills", "eyebrow": null, "title": "Toolbox", "copy": null },
     { "key": "about", "eyebrow": "About", "title": "About me", "copy": null }
   ],
   "navLinks": [

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   type ComponentType,
+  Fragment,
   type MouseEvent as ReactMouseEvent,
   useEffect,
   useRef,
@@ -107,12 +108,15 @@ const WRAP = 'max-w-[1240px] mx-auto px-6';
 const ANCHOR = 'scroll-mt-[84px]';
 
 const SEC_H2 =
-  'font-tight text-[clamp(28px,3.6vw,44px)] font-semibold leading-[1.08] tracking-[-0.045em]';
-const SEC_P = 'mt-[14px] text-[14px] leading-[1.7] text-dim';
+  'font-tight text-[clamp(32px,4.4vw,50px)] font-semibold leading-[1.08] tracking-[-0.045em]';
+const SEC_P = 'mt-[14px] text-[13px] leading-[1.7] text-dim';
 
-const LABEL2 = 'text-[12px] uppercase tracking-[.14em] text-dim2 font-semibold';
+const LABEL2 = 'text-[11px] uppercase tracking-[.16em] text-dim2 font-semibold';
 
-const META = 'text-[12.5px] text-dim2 leading-[1.6]';
+const META = 'text-[12px] text-dim2 leading-[1.6]';
+
+const TAG =
+  'text-[11px] font-medium text-dim2 border border-line rounded-none px-2.5 py-1';
 
 const SQUARE_LINK =
   'flex justify-center items-center border border-edge hover:border-ink size-9 text-dim hover:text-ink transition-colors duration-300 shrink-0';
@@ -132,18 +136,20 @@ const ICONS: Record<string, ComponentType> = {
 const projectId = (name: string) =>
   `project-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
-/** Same header shape for every section; label matches the nav item. */
-function SectionHeader(props: { s?: SectionContent; count?: string }) {
+/** Same header shape for every section; eyebrow matches the nav item. */
+function SectionHeader(props: { s?: SectionContent; bare?: boolean }) {
+  const body = (
+    <>
+      {props.s?.eyebrow && <p className={LABEL2}>{props.s.eyebrow}</p>}
+      <h2 className={`${SEC_H2} mt-3`}>{props.s?.title}</h2>
+      {props.s?.copy && <p className={SEC_P}>{props.s.copy}</p>}
+    </>
+  );
+  // bare: caller already wraps it in a reveal block.
+  if (props.bare) return body;
   return (
-    <div data-reveal className={`${REVEAL} border-line border-t pt-5`}>
-      <div className="flex justify-between items-baseline gap-4">
-        <p className={LABEL2}>{props.s?.eyebrow}</p>
-        {props.count && <p className={META}>{props.count}</p>}
-      </div>
-      <h2 className={`${SEC_H2} mt-4 max-w-[22ch]`}>{props.s?.title}</h2>
-      {props.s?.copy && (
-        <p className={`${SEC_P} max-w-[62ch]`}>{props.s.copy}</p>
-      )}
+    <div data-reveal className={`${REVEAL} max-w-170`}>
+      {body}
     </div>
   );
 }
@@ -154,17 +160,11 @@ function FlowMap(props: { nodes: FlowNode[] }) {
   const ext = 'border-dim2 border-dashed text-dim';
   return (
     <figure className="mt-7">
-      <ol className="flex max-sm:flex-col flex-wrap items-stretch gap-y-2">
+      <ol className="flex flex-wrap items-stretch gap-y-2">
         {props.nodes.map((n, i) => (
-          <li
-            key={n.label + i}
-            className="flex max-sm:flex-col items-center max-sm:items-stretch"
-          >
+          <li key={n.label + i} className="flex items-center">
             {i > 0 && (
-              <span
-                aria-hidden="true"
-                className="max-sm:self-center px-2 max-sm:px-0 text-dim2 max-sm:rotate-90"
-              >
+              <span aria-hidden="true" className="px-2 text-dim2">
                 →
               </span>
             )}
@@ -215,12 +215,6 @@ function App() {
   );
   const spotlight = content.projects.filter((p) => p.kind === 'spotlight');
   const built = content.projects.filter((p) => p.kind !== 'spotlight');
-  const firstYear = Math.min(
-    ...content.experience.map((x) => Number(x.startDate.slice(0, 4))),
-  );
-  const careerSpan = Number.isFinite(firstYear)
-    ? `${firstYear} – now`
-    : undefined;
   const section = (key: string) => content.sections[key];
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -462,129 +456,157 @@ function App() {
           id="home"
           className={`${ANCHOR} relative isolate overflow-x-clip`}
         >
-          <div
-            className={`${WRAP} pt-[clamp(32px,4vw,56px)] pb-[clamp(48px,5vw,64px)]`}
-          >
-            <p className={LABEL2}>{profile.heroRole}</p>
-            <h1 className="mt-4 font-tight font-semibold text-[clamp(34px,4.6vw,64px)] leading-[0.95]">
-              {/* One line on wide screens so work shows in the first screen. */}
-              {profile.heroName.map((line) => (
-                <span key={line} className="inline-block mr-[0.28em]">
-                  {line}
-                </span>
-              ))}
-            </h1>
-            <p className="mt-[clamp(22px,2.6vw,34px)] max-w-[32ch] font-tight font-semibold text-[clamp(20px,2.4vw,30px)] leading-[1.2] tracking-[-0.02em]">
-              {profile.heroTagline}
-            </p>
-            {profile.availability && (
-              <p className="flex items-center gap-2.5 mt-5 text-[14px] text-dim">
-                <span
-                  aria-hidden="true"
-                  className="bg-[#4ade80] rounded-full size-2 shrink-0"
-                />
-                {profile.availability}
-              </p>
-            )}
-            <div className="flex flex-wrap justify-between items-center gap-x-8 gap-y-4 mt-8">
-              <div className="flex max-sm:flex-wrap flex-nowrap gap-3">
-                <button
-                  type="button"
-                  onClick={onSectionButtonClick('#work')}
-                  className={`${BTN} px-6.5 py-2.75 shrink-0`}
-                >
-                  See my work <ArrowR />
-                </button>
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-2 px-6.5 py-2.75 border border-edge hover:border-ink font-medium text-[14px] transition-colors duration-300"
-                >
-                  Contact me <ArrowR />
-                </Link>
+          <div className={`${WRAP} relative`}>
+            {/* Name position + size mirror .intro-loader__identity; keep in sync. */}
+            <div className="flex flex-col pt-[clamp(24px,3.5vw,52px)] min-[1200px]:min-h-[calc(100svh-68px)]">
+              <div className="py-[clamp(28px,5vw,72px)] max-w-280">
+                <div>
+                  <h1 className="font-tight font-semibold text-[clamp(42px,7.2vw,118px)] leading-[0.85]">
+                    {profile.heroName.map((line) => (
+                      <span key={line} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </h1>
+                  <p className={`${LABEL2} mt-[clamp(18px,2vw,28px)] text-dim`}>
+                    {profile.heroRole}
+                  </p>
+                </div>
               </div>
-              <div className="flex gap-7">
-                {content.quickLinks.map((l) => (
-                  <a
-                    key={l.href + l.label}
-                    href={l.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${LABEL2} py-2 hover:text-ink transition-colors duration-300`}
+
+              <div className="flex max-[1100px]:flex-col justify-between items-center max-[1100px]:items-start gap-8 max-[1100px]:gap-6 mt-[clamp(28px,4vw,52px)] py-[clamp(20px,2.6vw,30px)] border-line border-t overflow-visible cursor-zone halo-target halo-cell">
+                <p className="max-w-[44ch] font-tight font-semibold text-[clamp(16px,1.8vw,23px)] leading-[1.2] tracking-[-0.02em] text-balance">
+                  {profile.heroTagline}
+                </p>
+                <div className="flex max-sm:flex-wrap flex-nowrap gap-3 shrink-0">
+                  <button
+                    type="button"
+                    onClick={onSectionButtonClick('#work')}
+                    className={`${BTN} px-6.5 py-2.75 shrink-0`}
                   >
-                    {l.label}
-                  </a>
-                ))}
+                    View my work <ArrowR />
+                  </button>
+                  <Link
+                    to="/contact"
+                    className="inline-flex items-center gap-2 px-6.5 py-2.75 border border-edge hover:border-ink font-medium text-[14px] transition-colors duration-300"
+                  >
+                    Contact me <ArrowR />
+                  </Link>
+                </div>
               </div>
+
+              <div className="flex max-nav:flex-col justify-between max-nav:items-start gap-x-8 py-2 border-line border-t">
+                {profile.availability ? (
+                  <p className="flex items-center gap-2.5 py-3.5 text-[13px] text-dim">
+                    <span
+                      aria-hidden="true"
+                      className="bg-[#4ade80] rounded-full size-2 shrink-0"
+                    />
+                    {profile.availability}
+                  </p>
+                ) : (
+                  <span />
+                )}
+                <div className="flex gap-8">
+                  {content.quickLinks.map((l) => (
+                    <a
+                      key={l.href + l.label}
+                      href={l.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${LABEL2} py-3.5 hover:text-ink transition-colors duration-300`}
+                    >
+                      {l.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div className="flex-1" aria-hidden="true" />
             </div>
 
-            <ul className="grid grid-cols-4 max-nav:grid-cols-2 mt-[clamp(32px,4vw,48px)] border-line border-t border-b cursor-zone">
-              {content.stats.map((s, n) => (
-                <li
-                  key={s.value + s.label}
-                  className={`min-w-0 p-[clamp(16px,2vw,24px)] halo-target halo-cell border-line ${
-                    n > 0 ? 'border-l' : ''
-                  } max-nav:[&:nth-child(odd)]:border-l-0 max-nav:[&:nth-child(n+3)]:border-t`}
-                >
-                  <p className="font-tight font-semibold text-[17px] tracking-[-0.02em]">
-                    {s.value}
-                  </p>
-                  <p className="mt-1.5 text-[13.5px] text-dim leading-normal">
-                    {s.label}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <div
+              data-reveal
+              className={`${REVEAL} cursor-zone halo-target frame-card overflow-hidden mt-[clamp(36px,5vw,76px)] rounded-none bg-surface p-[clamp(26px,4vw,54px)]`}
+            >
+              <span className="halo-light" aria-hidden="true" />
+              <ul className="z-1 relative grid grid-cols-4 max-sm:grid-cols-2 max-sm:gap-y-8">
+                {content.stats.map((s, n) => (
+                  <li
+                    key={s.label + s.value}
+                    className={`min-w-0 text-center px-[clamp(8px,1.6vw,22px)] ${
+                      n > 0 ? 'border-l border-line' : ''
+                    } max-sm:[&:nth-child(odd)]:border-l-0`}
+                  >
+                    <p className="font-tight font-semibold text-[clamp(18px,2.2vw,30px)] leading-none tracking-[-0.035em]">
+                      {s.value}
+                    </p>
+                    <p className="mx-auto mt-3 max-w-[26ch] text-[13px] text-dim leading-normal">
+                      {s.label}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
 
-        <section id="work" className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}>
+        <section id="work" className={`${ANCHOR} py-[clamp(72px,9vw,120px)]`}>
           <div className={WRAP}>
-            <SectionHeader
-              s={section('workSpotlight')}
-              count={`${spotlight.length} products`}
-            />
-            <div className="gap-[clamp(20px,2.6vw,32px)] grid grid-cols-2 max-wide:grid-cols-1 mt-[clamp(28px,3.5vw,44px)]">
+            <SectionHeader s={section('workSpotlight')} />
+            <div className="mt-[clamp(44px,5vw,64px)] border-line border-t">
               {spotlight.map((project) => (
                 <article
                   key={project.name}
                   id={projectId(project.name)}
                   data-reveal
-                  className={`${REVEAL} ${ANCHOR} project-card halo-target flex flex-col border border-line bg-surface p-[clamp(22px,3vw,36px)]`}
+                  className={`${REVEAL} ${ANCHOR} project-card halo-target grid grid-cols-[.72fr_1.28fr] gap-[clamp(28px,6vw,80px)] border-b border-line py-[clamp(36px,5vw,64px)] last:border-b-0 max-wide:grid-cols-1 max-wide:gap-6`}
                 >
-                  <p className={LABEL2}>{project.category}</p>
-                  <h3 className="mt-3 font-tight font-semibold text-[clamp(28px,3.4vw,44px)] leading-none tracking-[-0.045em]">
-                    {project.name}
-                  </h3>
-                  <p className={`${META} mt-3`}>{project.role}</p>
-                  <p className="mt-5 max-w-[48ch] text-[clamp(16px,1.6vw,19px)] leading-normal">
-                    {project.description}
-                  </p>
-                  {project.flow.length > 0 && <FlowMap nodes={project.flow} />}
-                  {project.built.length > 0 && (
-                    <ul className="gap-2 grid mt-6">
-                      {project.built.map((item) => (
-                        <li
-                          key={item}
-                          className="flex gap-3 text-[14px] text-dim leading-[1.55]"
-                        >
-                          <span aria-hidden="true" className="text-dim2">
-                            —
-                          </span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <div className="flex flex-wrap justify-between items-end gap-4 mt-auto pt-7">
-                    <p className={`${META} max-w-[46ch]`}>
-                      {project.technologies.join(' · ')}
+                  <div>
+                    <p className={LABEL2}>{project.category}</p>
+                    <h3 className="mt-3 font-tight font-semibold text-[clamp(30px,4.4vw,54px)] tracking-[-0.045em]">
+                      {project.name}
+                    </h3>
+                    <p
+                      className={`${LABEL2} mt-4 normal-case tracking-[.04em]`}
+                    >
+                      {project.role}
                     </p>
+                  </div>
+                  <div className="flex flex-col items-start min-w-0">
+                    <p className="max-w-[54ch] text-[clamp(17px,2vw,22px)] leading-normal">
+                      {project.description}
+                    </p>
+                    {project.flow.length > 0 && (
+                      <FlowMap nodes={project.flow} />
+                    )}
+                    {project.built.length > 0 && (
+                      <ul className="gap-2 grid mt-6 max-w-[66ch]">
+                        {project.built.map((item) => (
+                          <li
+                            key={item}
+                            className="flex gap-3 text-[14px] text-dim leading-[1.6]"
+                          >
+                            <span aria-hidden="true" className="text-dim2">
+                              —
+                            </span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="flex flex-wrap gap-1.5 mt-6">
+                      {project.technologies.map((technology) => (
+                        <span key={technology} className={TAG}>
+                          {technology}
+                        </span>
+                      ))}
+                    </div>
                     {project.href && (
                       <a
                         href={project.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 pb-2 border-ink border-b font-semibold text-[13px]"
+                        className="inline-flex items-center gap-1.5 mt-7 pb-2 border-ink border-b font-semibold text-[12.5px]"
                       >
                         {project.linkLabel} <ArrowUR size={12} />
                       </a>
@@ -598,43 +620,60 @@ function App() {
 
         <section id="built" className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}>
           <div className={WRAP}>
-            <SectionHeader
-              s={section('workEngineering')}
-              count={`${built.length} projects`}
-            />
-            <div className="gap-px grid grid-cols-3 max-wide:grid-cols-2 max-sm:grid-cols-1 bg-line mt-[clamp(28px,3.5vw,44px)] border border-line">
-              {built.map((project) => (
+            <SectionHeader s={section('workEngineering')} />
+            <div className="gap-x-[clamp(32px,6vw,80px)] grid grid-cols-2 max-nav:grid-cols-1 mt-10 border-line border-t">
+              {built.map((project, index) => (
                 <article
                   key={project.name}
                   data-reveal
-                  className={`${REVEAL} flex flex-col min-w-0 bg-bg p-[clamp(20px,2.4vw,28px)] halo-target halo-cell`}
+                  className={`${REVEAL} grid grid-cols-[42px_1fr] gap-5 border-b border-line py-[clamp(30px,4vw,44px)]`}
                 >
-                  <p className={LABEL2}>
-                    {[project.category, project.status]
-                      .filter(Boolean)
-                      .join(' · ') || 'Earlier work'}
-                  </p>
-                  <h3 className="mt-4 font-tight font-semibold text-[clamp(21px,2.2vw,26px)] leading-[1.1] tracking-[-0.035em]">
-                    {project.name}
-                  </h3>
-                  {project.description && (
-                    <p className="mt-2.5 text-[14px] text-dim leading-[1.6]">
-                      {project.description}
-                    </p>
-                  )}
-                  <div className="flex justify-between items-end gap-4 mt-auto pt-6">
-                    <p className={META}>{project.technologies.join(' · ')}</p>
-                    {project.href && (
-                      <a
-                        href={project.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`${project.linkLabel ?? 'Open'}: ${project.name}`}
-                        className={SQUARE_LINK}
-                      >
-                        <ArrowUR size={13} />
-                      </a>
+                  <span className="pt-1 font-tight font-semibold text-[12px] text-dim2 select-none">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <div className="flex flex-col min-w-0">
+                    <div className="flex justify-between items-center gap-4">
+                      <p className={LABEL2}>
+                        {project.category ?? 'Earlier work'}
+                      </p>
+                      {project.status && (
+                        <p className="flex items-center gap-2 font-semibold text-[10px] text-dim2 uppercase tracking-[.12em]">
+                          <span
+                            className="bg-dim2 size-1.5"
+                            aria-hidden="true"
+                          />
+                          {project.status}
+                        </p>
+                      )}
+                    </div>
+                    <h3 className="mt-5 font-tight font-semibold text-[clamp(21px,2.4vw,29px)] leading-[1.1] tracking-[-0.035em]">
+                      {project.name}
+                    </h3>
+                    {project.description && (
+                      <p className="mt-3 max-w-[54ch] text-[13px] text-dim leading-[1.7]">
+                        {project.description}
+                      </p>
                     )}
+                    <div className="flex max-sm:flex-col justify-between items-end max-sm:items-start gap-5 mt-auto pt-7">
+                      <div className="flex flex-wrap gap-1.5">
+                        {project.technologies.map((technology) => (
+                          <span key={technology} className={TAG}>
+                            {technology}
+                          </span>
+                        ))}
+                      </div>
+                      {project.href && (
+                        <a
+                          href={project.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${project.linkLabel ?? 'Open'}: ${project.name}`}
+                          className={SQUARE_LINK}
+                        >
+                          <ArrowUR size={13} />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </article>
               ))}
@@ -644,23 +683,23 @@ function App() {
 
         <section id="career" className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}>
           <div className={WRAP}>
-            <SectionHeader s={section('experience')} count={careerSpan} />
+            <SectionHeader s={section('experience')} />
             <div
               data-reveal
-              className={`${REVEAL} cursor-zone mt-[clamp(20px,2.5vw,32px)]`}
+              className={`${REVEAL} cursor-zone mt-[clamp(40px,5vw,56px)] border-t border-line`}
             >
               {content.experience.map((x) => {
                 const linked = spotlight.find((p) => p.name === x.project);
                 return (
                   <div
                     key={x.role + x.company + x.period}
-                    className="items-start gap-6 max-nav:gap-1.5 grid grid-cols-[150px_1fr] max-nav:grid-cols-1 px-2.5 max-nav:px-1 py-6 border-line border-b halo-target halo-cell"
+                    className="items-start gap-6 max-nav:gap-2 grid grid-cols-[150px_1fr] max-nav:grid-cols-1 px-2.5 max-nav:px-1 py-8 max-nav:py-6.5 border-line border-b halo-target halo-cell"
                   >
-                    <span className="pt-1 max-nav:pt-0 text-[13px] text-dim2 whitespace-nowrap">
+                    <span className="pt-1.5 max-nav:pt-0 font-medium text-[12px] text-dim2 whitespace-nowrap">
                       {x.period}
                     </span>
                     <div>
-                      <h3 className="font-tight font-semibold text-[clamp(18px,1.9vw,22px)] tracking-tight">
+                      <h3 className="font-tight font-semibold text-[clamp(19px,2vw,24px)] tracking-tight">
                         {x.role}{' '}
                         <span className="font-medium text-dim">
                           · {x.company}
@@ -672,67 +711,104 @@ function App() {
                           onClick={onSectionButtonClick(
                             `#${projectId(linked.name)}`,
                           )}
-                          className="inline-flex items-center gap-1.5 mt-2 text-[14px] text-dim hover:text-ink underline underline-offset-4 decoration-edge hover:decoration-ink transition-colors duration-300"
+                          className="inline-flex items-center gap-1.5 mt-2 text-[13px] text-dim hover:text-ink underline underline-offset-4 decoration-edge hover:decoration-ink transition-colors duration-300"
                         >
-                          See {linked.name} in Work{' '}
+                          See {linked.name} above{' '}
                           <span aria-hidden="true">↑</span>
                         </button>
                       ) : (
-                        <p className="mt-2 max-w-[68ch] text-[14px] text-dim leading-[1.65]">
+                        <p className="mt-2 max-w-[68ch] text-[13px] text-dim leading-[1.65]">
                           {x.description}
                         </p>
                       )}
-                      <p className={`${META} mt-2.5`}>{x.stack.join(' · ')}</p>
+                      <div className="flex flex-wrap gap-1.5 mt-3.5">
+                        {x.stack.map((t) => (
+                          <span key={t} className={TAG}>
+                            {t}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 );
               })}
-              <div className="items-start gap-6 max-nav:gap-3 grid grid-cols-[150px_1fr] max-nav:grid-cols-1 px-2.5 max-nav:px-1 py-6 border-line border-b">
-                <span className="pt-0.5 text-[13px] text-dim2">
-                  {section('skills')?.title ?? 'Toolbox'}
-                </span>
-                <dl className="gap-x-10 gap-y-3 grid grid-cols-2 max-sm:grid-cols-1">
-                  {content.skillGroups.map((g) => (
-                    <div key={g.name}>
-                      <dt className={META}>{g.name}</dt>
-                      <dd className="mt-0.5 text-[14px]">
-                        {g.technologies.join(' · ')}
-                      </dd>
+            </div>
+
+            <div className="items-start gap-16 max-wide:gap-11 grid grid-cols-[1fr_1.35fr] max-wide:grid-cols-1 mt-[clamp(96px,12vw,160px)]">
+              <div data-reveal className={REVEAL}>
+                <h3 className="font-tight font-semibold text-[clamp(30px,3.6vw,46px)] leading-[1.06] tracking-[-0.045em]">
+                  {(section('skills')?.title ?? '')
+                    .split('\n')
+                    .map((line, i) => (
+                      <Fragment key={i}>
+                        {i > 0 && <br />}
+                        {line}
+                      </Fragment>
+                    ))}
+                </h3>
+              </div>
+              <div data-reveal className={`${REVEAL} frame-card`}>
+                <div className="grid grid-cols-2 max-sm:grid-cols-1 border-line border-t border-l">
+                  {content.skillGroups.map((group) => (
+                    <div
+                      key={group.name}
+                      className="p-[clamp(22px,3vw,34px)] border-line border-r border-b min-h-42.5 text-center halo-target halo-cell"
+                    >
+                      <h4 className={LABEL2}>{group.name}</h4>
+                      <div className="flex flex-wrap justify-center gap-y-2 mt-6">
+                        {group.technologies.map((technology, index) => (
+                          <span
+                            key={technology}
+                            className="font-semibold text-[14px] text-dim hover:text-ink transition-colors duration-300"
+                          >
+                            {technology}
+                            {index < group.technologies.length - 1 && (
+                              <span
+                                aria-hidden="true"
+                                className="mx-3 text-dim2"
+                              >
+                                •
+                              </span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   ))}
-                </dl>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         <section id="about" className={`${ANCHOR} pb-[clamp(72px,9vw,120px)]`}>
-          <div className={WRAP}>
-            <SectionHeader s={section('about')} />
-            <div className="items-center gap-[clamp(40px,7vw,96px)] grid grid-cols-[minmax(0,1fr)_minmax(320px,440px)] max-wide:grid-cols-1 mt-[clamp(28px,3.5vw,44px)] overflow-visible about-halo cursor-zone halo-target halo-cell">
-              <div data-reveal className={REVEAL}>
-                {profile.aboutParagraphs.map((p, i) => (
-                  <p
-                    key={i}
-                    className={`${i === 0 ? '' : 'mt-3'} max-w-[58ch] text-[clamp(15px,1.5vw,18px)] text-dim leading-[1.52] tracking-[-0.012em] [word-spacing:-0.035em]`}
-                  >
-                    {p}
-                  </p>
-                ))}
-                <a
-                  href={profile.cvPath}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 mt-7 py-3 border-ink border-b font-semibold text-[13px]"
+          <div
+            className={`${WRAP} about-halo cursor-zone halo-target halo-cell overflow-visible grid grid-cols-[minmax(0,1fr)_minmax(380px,520px)] gap-[clamp(48px,8vw,112px)] items-center max-wide:grid-cols-1`}
+          >
+            <div data-reveal className={REVEAL}>
+              <SectionHeader s={section('about')} bare />
+              {profile.aboutParagraphs.map((p, i) => (
+                <p
+                  key={i}
+                  className={`${i === 0 ? 'mt-6' : 'mt-3'} max-w-[58ch] text-[clamp(15px,1.5vw,18px)] text-dim leading-[1.52] tracking-[-0.012em] [word-spacing:-0.035em]`}
                 >
-                  Download résumé <ArrowUR size={12} />
-                </a>
-              </div>
-              <Portrait
-                className={`${REVEAL} max-wide:order-first`}
-                alt={profile.portraitAlt}
-              />
+                  {p}
+                </p>
+              ))}
+              <a
+                href={profile.cvPath}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 mt-7 py-3 border-ink border-b font-semibold text-[12.5px]"
+              >
+                Download résumé <ArrowUR size={12} />
+              </a>
             </div>
+
+            <Portrait
+              className={`${REVEAL} max-wide:order-first`}
+              alt={profile.portraitAlt}
+            />
           </div>
         </section>
       </main>
