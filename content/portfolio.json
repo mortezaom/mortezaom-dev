@@ -26,10 +26,16 @@
   },
   "sections": [
     {
+      "key": "timeline",
+      "eyebrow": null,
+      "title": "Six years, from building apps to leading whole products.",
+      "copy": null
+    },
+    {
       "key": "workSpotlight",
       "eyebrow": "Work",
       "title": "Work that defines what I do now.",
-      "copy": "Production products where I own major parts of the engineering. Filled boxes in each map are the parts I built."
+      "copy": "Production products where I own major parts of the engineering. Filled markers are the parts I built."
     },
     {
       "key": "workEngineering",
@@ -46,7 +52,7 @@
     {
       "key": "skills",
       "eyebrow": null,
-      "title": "Tools I use to\nbuild and ship",
+      "title": "What I own\nend to end",
       "copy": null
     },
     { "key": "about", "eyebrow": "About", "title": "About me", "copy": null }
@@ -84,12 +90,23 @@
   ],
   "stats": [
     {
-      "value": "Backend",
-      "label": "Node.js and Go services, queues, MongoDB and Postgres"
+      "value": "Product architecture",
+      "label": "Data model and services, planned from day one"
     },
-    { "value": "Payments", "label": "Stripe checkout and payment flows" },
-    { "value": "Web", "label": "React, Next.js and Vue customer apps" },
-    { "value": "Mobile", "label": "Flutter apps, including a ticket scanner" }
+    { "value": "Payments", "label": "Checkout, payment flows and payouts" },
+    {
+      "value": "Customer apps",
+      "label": "Web and mobile, built as one product"
+    },
+    { "value": "Team lead", "label": "Remote delivery with clear ownership" },
+    {
+      "value": "Reliable releases",
+      "label": "Background work, monitoring and calm launches"
+    },
+    {
+      "value": "AI-assisted delivery",
+      "label": "Modern tools and workflows, same quality bar"
+    }
   ],
   "projects": [
     {
@@ -111,24 +128,28 @@
         "Stripe"
       ],
       "built": [
-        "Event and order services, including seat management",
-        "Stripe payment flows and background jobs for ticket delivery",
-        "Customer web app and the Flutter check-in scanner"
+        "Order and inventory services, including seat management",
+        "Card payment flows and automated ticket delivery",
+        "The customer storefront and a QR pass scanner app"
       ],
       "flow": [
-        { "label": "Customer web app", "detail": "React", "mine": true },
         {
-          "label": "Event & order services",
-          "detail": "Node.js · MongoDB",
+          "label": "Customer storefront",
+          "detail": "Browse and buy",
           "mine": true
         },
-        { "label": "Stripe", "detail": "payment flows", "mine": false },
         {
-          "label": "Background jobs",
-          "detail": "BullMQ · Redis",
+          "label": "Bookings and inventory",
+          "detail": "Orders and seat holds",
           "mine": true
         },
-        { "label": "Scanner app", "detail": "Flutter", "mine": true }
+        { "label": "Payments", "detail": "Card checkout", "mine": false },
+        {
+          "label": "Automated delivery",
+          "detail": "Background jobs",
+          "mine": true
+        },
+        { "label": "Pass scanner", "detail": "QR validation app", "mine": true }
       ]
     },
     {
@@ -148,23 +169,23 @@
         "Stripe"
       ],
       "built": [
-        "The Flutter app",
-        "Backend services, product and order flows",
-        "Service workflows and payment integration"
+        "The cross-platform mobile app",
+        "Backend services for listings and orders",
+        "Service booking workflows and payment integration"
       ],
       "flow": [
-        { "label": "Flutter app", "detail": "iOS · Android", "mine": true },
+        { "label": "Mobile app", "detail": "iOS and Android", "mine": true },
         {
-          "label": "Backend services",
-          "detail": "Node.js · Firebase",
+          "label": "Marketplace",
+          "detail": "Listings and orders",
           "mine": true
         },
         {
-          "label": "Product, order & service flows",
-          "detail": "TypeScript",
+          "label": "Service booking",
+          "detail": "Requests and workflows",
           "mine": true
         },
-        { "label": "Stripe", "detail": "payments", "mine": false }
+        { "label": "Payments", "detail": "Card checkout", "mine": false }
       ]
     },
     {
@@ -172,7 +193,7 @@
       "category": "Open source",
       "name": "Relay Pulse",
       "href": "https://github.com/mortezaom/relay-pulse",
-      "description": "An uptime-monitoring platform for HTTP, HTTPS, and TCP services, designed for simple deployment on Cloudflare Workers.",
+      "description": "Open-source uptime monitoring for websites, APIs and network services, simple to deploy.",
       "role": null,
       "status": "In active development",
       "linkLabel": "View source",
@@ -244,7 +265,7 @@
       "company": "Webfume LLC",
       "period": "Mar 2022 — Oct 2024",
       "startDate": "2022-03",
-      "description": "Built and released web and mobile products for clients in a fully remote team using Flutter, Firebase, Vue, and Node.js.",
+      "description": "Built and released web and mobile products for clients in a fully remote team.",
       "stack": ["Flutter", "Firebase", "Vue", "Node.js"],
       "project": null
     },
@@ -253,7 +274,7 @@
       "company": "Cynoco.co.uk",
       "period": "Mar 2020 — Feb 2022",
       "startDate": "2020-03",
-      "description": "Delivered Vue web interfaces and Flutter and Kotlin mobile applications from design handoff through production release.",
+      "description": "Delivered web interfaces and mobile apps from design handoff through production release.",
       "stack": ["Flutter", "Vue", "Kotlin"],
       "project": null
     }

@@ -28,6 +28,9 @@ function ProfilePage() {
     title: data.sections.about?.title ?? '',
     copy: data.sections.about?.copy ?? '',
   });
+  const [timelineTitle, setTimelineTitle] = useState(
+    data.sections.timeline?.title ?? '',
+  );
   const [paragraphs, setParagraphs] = useState<string[]>([
     ...data.profile.aboutParagraphs,
   ]);
@@ -55,6 +58,7 @@ function ProfilePage() {
             title: about.title,
             copy: about.copy || null,
           },
+          timeline: { eyebrow: null, title: timelineTitle, copy: null },
           stats: stats.map((s) => ({ value: s.value, label: s.label })),
         },
       }),
@@ -67,7 +71,7 @@ function ProfilePage() {
           Profile
         </h1>
         <p className="text-muted-foreground text-xs leading-relaxed">
-          Hero, work-across strip, about, contact.
+          Hero, career ribbon, capabilities, about, contact.
         </p>
       </div>
 
@@ -102,6 +106,15 @@ function ProfilePage() {
               <Input
                 value={profile.heroTagline}
                 onChange={(e) => patchProfile('heroTagline', e.target.value)}
+              />
+            </Field>
+            <Field
+              label="Career ribbon headline"
+              hint="Card under the hero; the bars come from Career rows."
+            >
+              <Input
+                value={timelineTitle}
+                onChange={(e) => setTimelineTitle(e.target.value)}
               />
             </Field>
             <Field label="Availability" hint="Optional line under the tagline.">
@@ -193,15 +206,15 @@ function ProfilePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Work across (hero strip)</CardTitle>
+          <CardTitle>What I own (capabilities grid)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
             {stats.map((s, i) => (
               <div key={i} className="flex items-center gap-2">
                 <Input
-                  placeholder="Area"
-                  aria-label="Area"
+                  placeholder="Capability"
+                  aria-label="Capability"
                   value={s.value}
                   onChange={(e) =>
                     setStats((list) =>
@@ -284,7 +297,7 @@ function ProfilePage() {
               ])
             }
           >
-            + Add area
+            + Add capability
           </Button>
         </CardContent>
       </Card>

@@ -19,7 +19,12 @@ import {
   XIcon,
 } from '../components/icons';
 import { Portrait } from '../components/portrait';
-import type { FlowNode, PublicContent, SectionContent } from '../lib/content';
+import type {
+  ExperienceItem,
+  FlowNode,
+  PublicContent,
+  SectionContent,
+} from '../lib/content';
 import { initPointerEffects } from '../lib/pointer-effects';
 import { getContentFn } from '../server/content';
 
@@ -60,6 +65,8 @@ export const Route = createFileRoute('/')({
         jobTitle: c?.profile.heroRole ?? 'Full-Stack Software Engineer',
         alumniOf: { '@type': 'CollegeOrUniversity', name: 'Herat University' },
         sameAs,
+        // Stack names stay machine-readable for search, off the visible page.
+        knowsAbout: c ? c.skillGroups.flatMap((g) => g.technologies) : [],
       },
     };
     return {
@@ -113,9 +120,6 @@ const SEC_H2 =
 const SEC_P = 'mt-[14px] text-[13px] leading-[1.7] text-dim';
 
 const LABEL2 = 'text-[11px] uppercase tracking-[.16em] text-dim2 font-semibold';
-
-const TAG =
-  'text-[11px] font-medium text-dim2 border border-line rounded-none px-2.5 py-1';
 
 const SQUARE_LINK =
   'flex justify-center items-center border border-edge hover:border-ink size-9 text-dim hover:text-ink transition-colors duration-300 shrink-0';
@@ -211,6 +215,104 @@ function FlowMap(props: { nodes: FlowNode[] }) {
         </span>
       </figcaption>
     </figure>
+  );
+}
+
+const monthOf = (ym: string) => {
+  const [y = 0, m = 1] = ym.split('-').map(Number);
+  return y * 12 + m - 1;
+};
+
+/** Roles on one time axis, a row each so overlapping roles stay honest. */
+function CareerRibbon(props: { experience: ExperienceItem[]; title?: string }) {
+  const starts = props.experience.map((x) => monthOf(x.startDate));
+  if (!starts.length) return null;
+  const now = new Date();
+  const max = now.getFullYear() * 12 + now.getMonth() + 1;
+  const min = Math.min(...starts);
+  const pct = (m: number) => Math.max(0, ((m - min) / (max - min)) * 100);
+  const firstYear = Math.floor(min / 12);
+  const years = Array.from(
+    { length: now.getFullYear() - firstYear + 1 },
+    (_, i) => firstYear + i,
+  );
+  return (
+    <>
+      <p className={LABEL2}>{firstYear} – now</p>
+      {props.title && (
+        <h2 className="mt-3 max-w-[30ch] font-tight font-semibold text-[clamp(22px,2.8vw,34px)] leading-[1.15] tracking-[-0.035em]">
+          {props.title}
+        </h2>
+      )}
+      <div className="relative mt-[clamp(28px,3.5vw,44px)]">
+        {years.map((y) => (
+          <span
+            key={y}
+            aria-hidden="true"
+            className="top-7 bottom-0 absolute bg-line w-px"
+            style={{ left: `${pct(y * 12)}%` }}
+          />
+        ))}
+        <div aria-hidden="true" className="relative h-5 text-[11px] text-dim2">
+          {years.map((y) => (
+            <span
+              key={y}
+              className="absolute"
+              style={{ left: `${pct(y * 12)}%` }}
+            >
+              {y}
+            </span>
+          ))}
+        </div>
+        <ol className="flex flex-col mt-2">
+          {props.experience.map((x, i) => {
+            const start = starts[i] ?? min;
+            // shortcut: a past role ends where the next one starts; add an endDate field if gaps appear.
+            const stop = /present/i.test(x.period)
+              ? max
+              : Math.min(...starts.filter((s) => s > start), max);
+            const left = pct(start);
+            const width = pct(stop) - left;
+            const lead = /lead/i.test(x.role);
+            const flip = left > 55;
+            return (
+              <li
+                key={x.role + x.company + x.period}
+                style={{ order: starts.filter((s) => s < start).length }}
+                className="relative h-17"
+              >
+                <span
+                  aria-hidden="true"
+                  className={`absolute top-3 h-px ${lead ? 'bg-ink' : 'bg-dim2/60'}`}
+                  style={{ left: `${left}%`, width: `${width}%` }}
+                />
+                <span
+                  aria-hidden="true"
+                  className={`absolute top-[9px] size-[7px] ${lead ? 'bg-ink' : 'bg-dim2'}`}
+                  style={{ left: `${left}%` }}
+                />
+                <div
+                  className={`absolute top-6 whitespace-nowrap ${flip ? 'text-right' : ''}`}
+                  style={
+                    flip
+                      ? { right: `${Math.max(0, 100 - left - width)}%` }
+                      : { left: `${left}%` }
+                  }
+                >
+                  <p className="font-tight font-semibold text-[15px] leading-tight">
+                    {x.company}
+                  </p>
+                  <p className="mt-0.5 text-[12px] text-dim2">
+                    {x.role}
+                    <span className="sr-only">, {x.period}</span>
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </>
   );
 }
 
@@ -545,23 +647,12 @@ function App() {
               className={`${REVEAL} cursor-zone halo-target frame-card overflow-hidden mt-[clamp(36px,5vw,76px)] rounded-none bg-surface p-[clamp(26px,4vw,54px)]`}
             >
               <span className="halo-light" aria-hidden="true" />
-              <ul className="z-1 relative grid grid-cols-4 max-sm:grid-cols-2 max-sm:gap-y-8">
-                {content.stats.map((s, n) => (
-                  <li
-                    key={s.label + s.value}
-                    className={`min-w-0 text-center px-[clamp(8px,1.6vw,22px)] ${
-                      n > 0 ? 'border-l border-line' : ''
-                    } max-sm:[&:nth-child(odd)]:border-l-0`}
-                  >
-                    <p className="font-tight font-semibold text-[clamp(18px,2.2vw,30px)] leading-none tracking-[-0.035em]">
-                      {s.value}
-                    </p>
-                    <p className="mx-auto mt-3 max-w-[26ch] text-[13px] text-dim leading-normal">
-                      {s.label}
-                    </p>
-                  </li>
-                ))}
-              </ul>
+              <div className="z-1 relative">
+                <CareerRibbon
+                  experience={content.experience}
+                  title={section('timeline')?.title}
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -610,13 +701,6 @@ function App() {
                         ))}
                       </ul>
                     )}
-                    <div className="flex flex-wrap gap-1.5 mt-6">
-                      {project.technologies.map((technology) => (
-                        <span key={technology} className={TAG}>
-                          {technology}
-                        </span>
-                      ))}
-                    </div>
                     {project.href && (
                       <a
                         href={project.href}
@@ -670,14 +754,7 @@ function App() {
                         {project.description}
                       </p>
                     )}
-                    <div className="flex max-sm:flex-col justify-between items-end max-sm:items-start gap-5 mt-auto pt-7">
-                      <div className="flex flex-wrap gap-1.5">
-                        {project.technologies.map((technology) => (
-                          <span key={technology} className={TAG}>
-                            {technology}
-                          </span>
-                        ))}
-                      </div>
+                    <div className="flex justify-end mt-auto pt-7">
                       {project.href && (
                         <a
                           href={project.href}
@@ -737,13 +814,6 @@ function App() {
                           {x.description}
                         </p>
                       )}
-                      <div className="flex flex-wrap gap-1.5 mt-3.5">
-                        {x.stack.map((t) => (
-                          <span key={t} className={TAG}>
-                            {t}
-                          </span>
-                        ))}
-                      </div>
                     </div>
                   </div>
                 );
@@ -765,30 +835,17 @@ function App() {
               </div>
               <div data-reveal className={`${REVEAL} frame-card`}>
                 <div className="grid grid-cols-2 max-sm:grid-cols-1 border-line border-t border-l">
-                  {content.skillGroups.map((group) => (
+                  {content.stats.map((s) => (
                     <div
-                      key={group.name}
-                      className="p-[clamp(22px,3vw,34px)] border-line border-r border-b min-h-42.5 text-center halo-target halo-cell"
+                      key={s.value}
+                      className="p-[clamp(22px,3vw,34px)] border-line border-r border-b text-center halo-target halo-cell"
                     >
-                      <h4 className={LABEL2}>{group.name}</h4>
-                      <div className="flex flex-wrap justify-center gap-y-2 mt-6">
-                        {group.technologies.map((technology, index) => (
-                          <span
-                            key={technology}
-                            className="font-semibold text-[14px] text-dim hover:text-ink transition-colors duration-300"
-                          >
-                            {technology}
-                            {index < group.technologies.length - 1 && (
-                              <span
-                                aria-hidden="true"
-                                className="mx-3 text-dim2"
-                              >
-                                •
-                              </span>
-                            )}
-                          </span>
-                        ))}
-                      </div>
+                      <h4 className="font-tight font-semibold text-[clamp(17px,1.7vw,20px)] tracking-[-0.02em]">
+                        {s.value}
+                      </h4>
+                      <p className="mx-auto mt-2.5 max-w-[30ch] text-[13px] text-dim leading-[1.6]">
+                        {s.label}
+                      </p>
                     </div>
                   ))}
                 </div>

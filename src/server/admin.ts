@@ -303,6 +303,7 @@ export const saveProfileFn = createServerFn({ method: 'POST' })
       contactCopy: req(p.contactCopy, 'profile.contactCopy'),
     };
     const about = section(data.about, 'about');
+    const timeline = section(data.timeline, 'timeline');
     if (!Array.isArray(data.stats))
       throw new Error('Invalid content: stats must be an array');
     if (data.stats.length > 100)
@@ -320,10 +321,12 @@ export const saveProfileFn = createServerFn({ method: 'POST' })
       await tx.insert(schema.profile).values(profileRow);
       await tx.delete(schema.stats);
       if (stats.length) await tx.insert(schema.stats).values(stats);
-      await tx
-        .insert(schema.sections)
-        .values({ key: 'about', ...about })
-        .onConflictDoUpdate({ target: schema.sections.key, set: about });
+      for (const [key, s] of Object.entries({ about, timeline })) {
+        await tx
+          .insert(schema.sections)
+          .values({ key, ...s })
+          .onConflictDoUpdate({ target: schema.sections.key, set: s });
+      }
       await bumpVersion(tx);
     });
     invalidateContentCache();

@@ -78,7 +78,8 @@ function CareerPage() {
       <div>
         <h1 className="font-semibold text-[22px] tracking-[-0.03em]">Career</h1>
         <p className="text-muted-foreground text-xs leading-relaxed">
-          Career rows + toolbox.
+          Career rows. Skill groups feed search engines only; they are not shown
+          on the page.
         </p>
       </div>
 
@@ -302,10 +303,10 @@ function CareerPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Toolbox</CardTitle>
+          <CardTitle>Capabilities heading</CardTitle>
         </CardHeader>
         <CardContent>
-          <Field label="Row label">
+          <Field label="Heading (line breaks allowed)">
             <Textarea
               rows={2}
               value={skillSec.title}
