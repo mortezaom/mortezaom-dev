@@ -280,17 +280,14 @@
     }
   ],
   "skillGroups": [
-    {
-      "name": "Web",
-      "technologies": ["TypeScript", "React", "Next.js", "Vue"]
-    },
+    { "name": "Web", "technologies": ["TypeScript", "React.js", "Next.js"] },
     {
       "name": "Backend",
       "technologies": ["Node.js", "Go", "PostgreSQL", "MongoDB", "Redis"]
     },
-    { "name": "Mobile", "technologies": ["Flutter", "Kotlin"] },
+    { "name": "Mobile", "technologies": ["Flutter"] },
     {
-      "name": "Infrastructure and services",
+      "name": "Platform",
       "technologies": ["Docker", "Cloudflare", "AWS", "Stripe"]
     }
   ]

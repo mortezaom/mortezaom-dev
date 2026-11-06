@@ -331,9 +331,7 @@ function App() {
   );
   const spotlight = content.projects.filter((p) => p.kind === 'spotlight');
   const built = content.projects.filter((p) => p.kind !== 'spotlight');
-  const toolbox = [
-    ...new Set(content.skillGroups.flatMap((g) => g.technologies)),
-  ];
+  const toolbox = content.skillGroups.filter((g) => g.technologies.length);
   const section = (key: string) => content.sections[key];
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -849,10 +847,19 @@ function App() {
                   </div>
                 </div>
                 {toolbox.length > 0 && (
-                  <p className="mt-7 text-[12px] text-dim2 leading-[1.8]">
-                    <span className={`${LABEL2} mr-3`}>Hands-on with</span>
-                    {toolbox.join(' · ')}
-                  </p>
+                  <div className="mt-8">
+                    <p className={LABEL2}>Hands-on with</p>
+                    <dl className="justify-between gap-x-8 gap-y-4 grid grid-cols-[repeat(4,auto)] max-nav:grid-cols-2 mt-4">
+                      {toolbox.map((g) => (
+                        <div key={g.name}>
+                          <dt className="text-[12.5px] text-dim">{g.name}</dt>
+                          <dd className="mt-1 text-[12.5px] text-dim2 leading-[1.6]">
+                            {g.technologies.join(' · ')}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
                 )}
               </div>
             </div>
