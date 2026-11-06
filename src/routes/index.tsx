@@ -65,7 +65,6 @@ export const Route = createFileRoute('/')({
         jobTitle: c?.profile.heroRole ?? 'Full-Stack Software Engineer',
         alumniOf: { '@type': 'CollegeOrUniversity', name: 'Herat University' },
         sameAs,
-        // Stack names stay machine-readable for search, off the visible page.
         knowsAbout: c ? c.skillGroups.flatMap((g) => g.technologies) : [],
       },
     };
@@ -333,6 +332,9 @@ function App() {
   );
   const spotlight = content.projects.filter((p) => p.kind === 'spotlight');
   const built = content.projects.filter((p) => p.kind !== 'spotlight');
+  const toolbox = [
+    ...new Set(content.skillGroups.flatMap((g) => g.technologies)),
+  ];
   const section = (key: string) => content.sections[key];
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -833,22 +835,30 @@ function App() {
                     ))}
                 </h3>
               </div>
-              <div data-reveal className={`${REVEAL} frame-card`}>
-                <div className="grid grid-cols-2 max-sm:grid-cols-1 border-line border-t border-l">
-                  {content.stats.map((s) => (
-                    <div
-                      key={s.value}
-                      className="p-[clamp(22px,3vw,34px)] border-line border-r border-b text-center halo-target halo-cell"
-                    >
-                      <h4 className="font-tight font-semibold text-[clamp(17px,1.7vw,20px)] tracking-[-0.02em]">
-                        {s.value}
-                      </h4>
-                      <p className="mx-auto mt-2.5 max-w-[30ch] text-[13px] text-dim leading-[1.6]">
-                        {s.label}
-                      </p>
-                    </div>
-                  ))}
+              <div data-reveal className={REVEAL}>
+                <div className="frame-card">
+                  <div className="grid grid-cols-2 max-sm:grid-cols-1 border-line border-t border-l">
+                    {content.stats.map((s) => (
+                      <div
+                        key={s.value}
+                        className="p-[clamp(22px,3vw,34px)] border-line border-r border-b text-center halo-target halo-cell"
+                      >
+                        <h4 className="font-tight font-semibold text-[clamp(17px,1.7vw,20px)] tracking-[-0.02em]">
+                          {s.value}
+                        </h4>
+                        <p className="mx-auto mt-2.5 max-w-[30ch] text-[13px] text-dim leading-[1.6]">
+                          {s.label}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+                {toolbox.length > 0 && (
+                  <p className="mt-7 text-[12px] text-dim2 leading-[1.8]">
+                    <span className={`${LABEL2} mr-3`}>Hands-on with</span>
+                    {toolbox.join(' · ')}
+                  </p>
+                )}
               </div>
             </div>
           </div>

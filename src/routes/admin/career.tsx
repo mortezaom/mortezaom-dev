@@ -78,8 +78,8 @@ function CareerPage() {
       <div>
         <h1 className="font-semibold text-[22px] tracking-[-0.03em]">Career</h1>
         <p className="text-muted-foreground text-xs leading-relaxed">
-          Career rows. Skill groups feed search engines only; they are not shown
-          on the page.
+          Career rows. Skill groups show as the quiet "Hands-on with" line under
+          the capabilities grid.
         </p>
       </div>
 
